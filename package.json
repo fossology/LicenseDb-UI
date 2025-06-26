@@ -1,0 +1,62 @@
+{
+  "name": "license-db",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@tanstack/react-query": "^5.29.2",
+    "axios": "^1.6.8",
+    "bootstrap": "^5.3.2",
+    "chart.js": "^4.4.1",
+    "chroma-js": "^2.4.2",
+    "js-yaml": "^4.1.0",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-color": "^2.19.3",
+    "react-data-table-component": "^7.5.4",
+    "react-diff-viewer-continued": "^3.4.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.11.0",
+    "react-router-dom": "^6.18.0",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
+    "react-spinners": "^0.13.8",
+    "react-toastify": "^10.0.4",
+    "styled-components": "^6.1.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint src/",
+    "lint-fix": "eslint --fix src/",
+    "prettier": "prettier src/",
+    "prettier-fix": "prettier --write src/"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.2.7",
+    "@eslint/eslintrc": "^3.3.0",
+    "@eslint/js": "^9.22.0",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.4",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3"
+  }
+}
