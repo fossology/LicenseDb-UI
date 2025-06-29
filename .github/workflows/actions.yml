@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: © 2025 Siemens AG
+# SPDX-FileContributor: Kaushlendra Pratap <kaushlendra-pratap.singh@siemens.com>
+
+# SPDX-License-Identifier: GPL-2.0-only
+
+name: LicenseDB UI Actions
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  setup-node:
+    name: Setup & Cache Node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          if [ -e package-lock.json ]; then
+            npm ci
+          else
+            npm i
+          fi
+
+  lint:
+    name: Lint
+    needs: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm ci --prefer-offline
+          npm run lint
+
+  format:
+    name: Format Check
+    needs: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm ci --prefer-offline
+          npm run prettier
+
+  build:
+    name: Build
+    needs: setup-node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm ci --prefer-offline
+          npm run build
+
+  reuse-compliance:
+    name: REUSE Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: REUSE Compliance Check
+        uses: fsfe/reuse-action@v5
+
+  lint-commits:
+    name: Commit Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: DCO Check
+        uses: christophebedard/dco-check@0.5.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: --exclude-pattern '.*dependabot\[bot\]@users\.noreply\.github\.com'
