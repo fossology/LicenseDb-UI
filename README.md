@@ -1,5 +1,5 @@
 <!-- 
-This is the frontend for https://github.com/fossology/LicenseDb project
+    SPDX-FileCopyrightText: © Fossology contributors
     SPDX-License-Identifier: GPL-2.0-only
 -->
 
