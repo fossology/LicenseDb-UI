@@ -136,8 +136,7 @@ function Operation() {
 	const handleExportLicense = async () => {
 		try {
 			const response = await exportLicenses();
-
-			const jsonData = JSON.stringify(response, null, 2);
+			const jsonData = JSON.stringify(response?.data, null, 2);
 			const blob = new Blob([jsonData], { type: 'application/json' });
 			const url = window.URL.createObjectURL(blob);
 			const link = document.createElement('a');
@@ -146,7 +145,6 @@ function Operation() {
 			const contentDisposition = response?.headers['content-disposition'];
 			const filename =
 				getFileNameFromContentDisposition(contentDisposition);
-
 			link.href = url;
 			link.setAttribute('download', filename);
 			document.body.appendChild(link);

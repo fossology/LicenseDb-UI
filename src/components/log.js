@@ -155,11 +155,10 @@ function Log() {
 							{log.type.toLowerCase() === 'obligation' && (
 								<span>&nbsp;{log.entity?.topic}</span>
 							)}
-							{log.type.toLowerCase() ===
-								'obligationclassification' && (
+							{log.type.toLowerCase() === 'classification' && (
 								<span>&nbsp;{log.entity?.classification}</span>
 							)}
-							{log.type.toLowerCase() === 'obligationtype' && (
+							{log.type.toLowerCase() === 'type' && (
 								<span>&nbsp;{log.entity?.type}</span>
 							)}
 						</p>
