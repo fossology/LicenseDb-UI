@@ -1,6 +1,6 @@
 {
-  "name": "license-db",
-  "version": "0.1.0",
+  "name": "LicenseDb-UI",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@tanstack/react-query": "^5.29.2",
