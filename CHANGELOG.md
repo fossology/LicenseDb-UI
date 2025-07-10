@@ -35,6 +35,11 @@ This initial release lays the foundation for a unified compliance workflow platf
 
 * `580639bab` feat(LicenseDB-UI): add frontend for LicenseDb project
 
+#### Corrections
+
+* `6c9a35d` fix(version): update version in package.json and footer
+* `cb324c1` fix(export): Fix license export
+
 #### Infrastructure
 
 * `70aae1f04` chore(contributing): add new CONTRIBUTING.md file
