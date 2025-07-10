@@ -15,7 +15,7 @@ import { accessLevelOptions } from '../utils/data/dropdownOptions';
 function CreateUser() {
 	const navigate = useNavigate();
 	const [userData, setUserData] = useState({
-		username: '',
+		user_name: '',
 		user_email: '',
 		display_name: '',
 		user_level: '',
@@ -74,7 +74,7 @@ function CreateUser() {
 
 	const handleReset = () => {
 		setUserData({
-			username: '',
+			user_name: '',
 			user_email: '',
 			display_name: '',
 			user_level: '',
@@ -95,8 +95,8 @@ function CreateUser() {
 										<Form.Label>User Name</Form.Label>
 										<Form.Control
 											type="text"
-											name="username"
-											value={userData.username}
+											name="user_name"
+											value={userData.user_name}
 											placeholder="Enter user name"
 											onChange={handleChange}
 										/>

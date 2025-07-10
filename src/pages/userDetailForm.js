@@ -54,7 +54,7 @@ function UserDetailForm({ userPayload, setUserPayload, page, perPage }) {
 					const newData = {
 						...oldData,
 						data: oldData.data.map(user => {
-							if (user.username === data.data[0].username) {
+							if (user.user_name === data.data[0].user_name) {
 								return data.data[0];
 							} else {
 								return user;
@@ -79,7 +79,7 @@ function UserDetailForm({ userPayload, setUserPayload, page, perPage }) {
 								<Form.Control
 									type="text"
 									placeholder="user name"
-									value={userPayload.username}
+									value={userPayload.user_name}
 									disabled
 								/>
 							</Form.Group>
@@ -140,7 +140,7 @@ function UserDetailForm({ userPayload, setUserPayload, page, perPage }) {
 						onClick={e => {
 							updateUserMutation.mutate({
 								userPayload,
-								username: userPayload.username,
+								username: userPayload.user_name,
 							});
 						}}
 					>
@@ -160,7 +160,7 @@ function UserDetailForm({ userPayload, setUserPayload, page, perPage }) {
 
 UserDetailForm.propTypes = {
 	userPayload: PropTypes.shape({
-		username: PropTypes.string.isRequired,
+		user_name: PropTypes.string.isRequired,
 		user_email: PropTypes.string.isRequired,
 		display_name: PropTypes.string.isRequired,
 		user_level: PropTypes.oneOfType([PropTypes.string, PropTypes.number])

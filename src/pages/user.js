@@ -31,7 +31,7 @@ function User() {
 	};
 
 	const handleRowClicked = row => {
-		if (userPayload && userPayload.username === row.username) {
+		if (userPayload && userPayload.user_name === row.user_name) {
 			setUserPayload(null);
 		} else {
 			setUserPayload(row);
@@ -45,7 +45,7 @@ function User() {
 	const columns = [
 		{
 			name: 'User Name',
-			selector: row => row.username ?? '',
+			selector: row => row.user_name ?? '',
 			sortable: true,
 			wrap: true,
 		},
