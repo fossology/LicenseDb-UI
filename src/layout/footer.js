@@ -6,7 +6,7 @@ import React from 'react';
 import AppLogo from '../assets/images/logo.png';
 
 function Footer() {
-	const version = '0.1.0-alpha.1';
+	const version = '1.0.0';
 	const currentYear = new Date().getFullYear();
 
 	return (
