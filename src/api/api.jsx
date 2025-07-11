@@ -14,7 +14,7 @@ export const fetchLicenses = async ({
 	sortField,
 	sortOrder,
 }) => {
-	const base_url = `${process.env.REACT_APP_BASE_URL}/licenses?page=${page}&limit=${limit}&sort_by=${sortField}&order_by=${sortOrder}`;
+	const base_url = `${process.env.VITE_API_BASE_URL}/licenses?page=${page}&limit=${limit}&sort_by=${sortField}&order_by=${sortOrder}`;
 	const paramString = Object.entries(params)
 		.map(
 			([key, value]) =>
@@ -34,7 +34,7 @@ export const fetchLicenses = async ({
 };
 
 export const fetchLicensePreviews = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/licenses/preview?active=true`;
+	const url = `${process.env.VITE_API_BASE_URL}/licenses/preview?active=true`;
 	const headers = {};
 	if (isApiAuthenticated('licenses/preview', 'get')) {
 		const token = await GetToken();
@@ -52,7 +52,7 @@ export const fetchObligations = async ({
 	params = { active: true },
 	sortOrder,
 }) => {
-	const base_url = `${process.env.REACT_APP_BASE_URL}/obligations?page=${page}&limit=${limit}&order_by=${sortOrder}`;
+	const base_url = `${process.env.VITE_API_BASE_URL}/obligations?page=${page}&limit=${limit}&order_by=${sortOrder}`;
 	const paramString = Object.entries(params)
 		.map(
 			([key, value]) =>
@@ -76,7 +76,7 @@ export const fetchUsers = async ({
 	limit = 10,
 	params = { active: true },
 }) => {
-	const base_url = `${process.env.REACT_APP_BASE_URL}/users?active=true&page=${page}&limit=${limit}`;
+	const base_url = `${process.env.VITE_API_BASE_URL}/users?active=true&page=${page}&limit=${limit}`;
 	const paramString = Object.entries(params)
 		.map(
 			([key, value]) =>
@@ -96,7 +96,7 @@ export const fetchUsers = async ({
 };
 
 export const fetchAudits = async ({ page, limit, params = {} }) => {
-	const base_url = `${process.env.REACT_APP_BASE_URL}/audits?page=${page}&limit=${limit}`;
+	const base_url = `${process.env.VITE_API_BASE_URL}/audits?page=${page}&limit=${limit}`;
 	const paramString = Object.entries(params)
 		.map(
 			([key, value]) =>
@@ -117,7 +117,7 @@ export const fetchAudits = async ({ page, limit, params = {} }) => {
 };
 
 export const fetchAuditDetails = async ({ auditId }) => {
-	const base_url = `${process.env.REACT_APP_BASE_URL}/audits/${auditId}/changes`;
+	const base_url = `${process.env.VITE_API_BASE_URL}/audits/${auditId}/changes`;
 	const headers = {};
 	if (isApiAuthenticated('audits/{audit_id}/changes', 'get')) {
 		const token = await GetToken();
@@ -130,7 +130,7 @@ export const fetchAuditDetails = async ({ auditId }) => {
 };
 
 export const postLicense = async ({ licensePayload }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/licenses`;
+	const url = `${process.env.VITE_API_BASE_URL}/licenses`;
 	const headers = {};
 	if (isApiAuthenticated('licenses', 'post')) {
 		const token = await GetToken();
@@ -143,7 +143,7 @@ export const postLicense = async ({ licensePayload }) => {
 };
 
 export const postObligation = async ({ obligationPayload }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations`;
 	const headers = {};
 	if (isApiAuthenticated('obligations', 'post')) {
 		const token = await GetToken();
@@ -156,7 +156,7 @@ export const postObligation = async ({ obligationPayload }) => {
 };
 
 export const postUser = async ({ userPayload }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/users`;
+	const url = `${process.env.VITE_API_BASE_URL}/users`;
 	const headers = {};
 	if (isApiAuthenticated('users', 'post')) {
 		const token = await GetToken();
@@ -173,7 +173,7 @@ export const updateLicense = async ({
 	accessToken,
 	shortname,
 }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/licenses/${encodeURIComponent(shortname)}`;
+	const url = `${process.env.VITE_API_BASE_URL}/licenses/${encodeURIComponent(shortname)}`;
 	const headers = {};
 	if (isApiAuthenticated('licenses/{shortname}', 'patch')) {
 		const token = await GetToken();
@@ -190,7 +190,7 @@ export const updateObligation = async ({
 	accessToken,
 	topic,
 }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/${encodeURIComponent(topic)}`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/${encodeURIComponent(topic)}`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/{topic}', 'patch')) {
 		const token = await GetToken();
@@ -206,7 +206,7 @@ export const updateObligationWithLicenses = async ({
 	associated_licenses,
 	topic,
 }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligation_maps/topic/${encodeURIComponent(topic)}/license`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligation_maps/topic/${encodeURIComponent(topic)}/license`;
 	const headers = {};
 	if (isApiAuthenticated('obligation_maps/topic/{topic}/license', 'put')) {
 		const token = await GetToken();
@@ -219,7 +219,7 @@ export const updateObligationWithLicenses = async ({
 };
 
 export const updateUser = async ({ userPayload, username }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/users/${encodeURIComponent(username)}`;
+	const url = `${process.env.VITE_API_BASE_URL}/users/${encodeURIComponent(username)}`;
 	const headers = {};
 	if (isApiAuthenticated('users/{username}', 'patch')) {
 		const token = await GetToken();
@@ -232,7 +232,7 @@ export const updateUser = async ({ userPayload, username }) => {
 };
 
 export const exportLicenses = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/licenses/export`;
+	const url = `${process.env.VITE_API_BASE_URL}/licenses/export`;
 	const headers = {};
 	if (isApiAuthenticated('licenses/export', 'get')) {
 		const token = await GetToken();
@@ -245,7 +245,7 @@ export const exportLicenses = async () => {
 };
 
 export const exportObligations = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/export`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/export`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/export', 'get')) {
 		const token = await GetToken();
@@ -260,7 +260,7 @@ export const exportObligations = async () => {
 export const uploadLicenseFile = async file => {
 	const formData = new FormData();
 	formData.append('file', file);
-	const url = `${process.env.REACT_APP_BASE_URL}/licenses/import`;
+	const url = `${process.env.VITE_API_BASE_URL}/licenses/import`;
 	const headers = {};
 	if (isApiAuthenticated('licenses/import', 'post')) {
 		const token = await GetToken();
@@ -276,7 +276,7 @@ export const uploadLicenseFile = async file => {
 export const uploadObligationFile = async file => {
 	const formData = new FormData();
 	formData.append('file', file);
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/import`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/import`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/import', 'post')) {
 		const token = await GetToken();
@@ -290,7 +290,7 @@ export const uploadObligationFile = async file => {
 };
 
 export const fetchObligationPreviews = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/preview?active=true`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/preview?active=true`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/preview', 'get')) {
 		const token = await GetToken();
@@ -301,7 +301,7 @@ export const fetchObligationPreviews = async () => {
 };
 
 export const fetchObligationsOfLicense = async ({ shortname }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligation_maps/license/${encodeURIComponent(shortname)}`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligation_maps/license/${encodeURIComponent(shortname)}`;
 	const headers = {};
 	if (isApiAuthenticated('obligation_maps/license/{license}', 'get')) {
 		const token = await GetToken();
@@ -348,7 +348,7 @@ export const updateObligationsOfLicense = async ({
 	}
 	const obligationUpdatePromises = Object.keys(changes).map(topic =>
 		axios.patch(
-			`${process.env.REACT_APP_BASE_URL}/obligation_maps/topic/${encodeURIComponent(topic)}/license`,
+			`${process.env.VITE_API_BASE_URL}/obligation_maps/topic/${encodeURIComponent(topic)}/license`,
 			{ map: changes[topic] },
 			{
 				headers,
@@ -359,7 +359,7 @@ export const updateObligationsOfLicense = async ({
 };
 
 export const fetchObligationTypes = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/types`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/types`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/types', 'get')) {
 		const token = await GetToken();
@@ -370,7 +370,7 @@ export const fetchObligationTypes = async () => {
 };
 
 export const postObligationType = async ({ payload }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/types`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/types`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/types', 'post')) {
 		const token = await GetToken();
@@ -383,7 +383,7 @@ export const postObligationType = async ({ payload }) => {
 };
 
 export const deleteObligationType = async ({ type }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/types/${encodeURIComponent(type)}`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/types/${encodeURIComponent(type)}`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/types/{type}', 'delete')) {
 		const token = await GetToken();
@@ -396,7 +396,7 @@ export const deleteObligationType = async ({ type }) => {
 };
 
 export const fetchObligationClassfications = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/classifications`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/classifications`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/classifications', 'get')) {
 		const token = await GetToken();
@@ -409,7 +409,7 @@ export const fetchObligationClassfications = async () => {
 };
 
 export const postObligationClassification = async ({ payload }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/classifications`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/classifications`;
 	const headers = {};
 	if (isApiAuthenticated('obligations/classifications', 'post')) {
 		const token = await GetToken();
@@ -422,7 +422,7 @@ export const postObligationClassification = async ({ payload }) => {
 };
 
 export const deleteObligationClassification = async ({ classification }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/classifications/${encodeURIComponent(classification)}`;
+	const url = `${process.env.VITE_API_BASE_URL}/obligations/classifications/${encodeURIComponent(classification)}`;
 	const headers = {};
 	if (
 		isApiAuthenticated(
@@ -445,7 +445,7 @@ export const deleteObligationClassification = async ({ classification }) => {
 };
 
 export const fetchUserProfile = async token => {
-	const url = `${process.env.REACT_APP_BASE_URL}/users/profile`;
+	const url = `${process.env.VITE_API_BASE_URL}/users/profile`;
 	const headers = {};
 	if (isApiAuthenticated('users/profile', 'get')) {
 		headers['Authorization'] = `Bearer ${token}`;
@@ -457,7 +457,7 @@ export const fetchUserProfile = async token => {
 };
 
 export const searchLicenseByShortname = async ({ queryPayload }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/search`;
+	const url = `${process.env.VITE_API_BASE_URL}/search`;
 	const headers = {};
 	if (isApiAuthenticated('search', 'post')) {
 		const token = await GetToken();
@@ -470,7 +470,7 @@ export const searchLicenseByShortname = async ({ queryPayload }) => {
 };
 
 export const fetchDashboardData = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/dashboard`;
+	const url = `${process.env.VITE_API_BASE_URL}/dashboard`;
 	const headers = {};
 	if (isApiAuthenticated('dashboard', 'get')) {
 		const token = await GetToken();
@@ -483,7 +483,7 @@ export const fetchDashboardData = async () => {
 };
 
 export const fetchApiAuthSettings = async () => {
-	const url = `${process.env.REACT_APP_BASE_URL}/apiCollection`;
+	const url = `${process.env.VITE_API_BASE_URL}/apiCollection`;
 	const response = await axios.get(url);
 	return response.data;
 };
