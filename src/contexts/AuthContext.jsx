@@ -19,7 +19,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
 	useEffect(() => {
-		if (process.env.REACT_APP_PROVIDER === 'oidc') {
+		if (process.env.VITE_API_PROVIDER === 'oidc') {
 			const interval = setInterval(
 				getAccessTokenFromRefreshToken,
 				30 * 60 * MILLISEC,
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
 
 	async function Signin(userCredentialsPayload) {
 		try {
-			const url = `${process.env.REACT_APP_BASE_URL}/login`;
+			const url = `${process.env.VITE_API_BASE_URL}/login`;
 			const response = await axios.post(url, userCredentialsPayload);
 			localStorage.setItem('licensedb.token', response.data.token);
 
@@ -52,10 +52,10 @@ export function AuthProvider({ children }) {
 	async function OidcSignin() {
 		const { code_verifier, code_challenge } = await generatePKCE();
 		localStorage.setItem('licensedb.codeVerifier', code_verifier);
-		const auth_url = `${process.env.REACT_APP_AUTH_URL}?response_type=code&client_id=${
-			process.env.REACT_APP_CLIENT_ID
+		const auth_url = `${process.env.VITE_API_AUTH_URL}?response_type=code&client_id=${
+			process.env.VITE_API_CLIENT_ID
 		}&redirect_uri=${encodeURIComponent(
-			process.env.REACT_APP_REDIRECT_URL,
+			process.env.VITE_API_REDIRECT_URL,
 		)}&scope=openid&code_challenge=${code_challenge}&code_challenge_method=S256&response_mode=fragment`;
 
 		window.location.href = auth_url;
@@ -71,12 +71,12 @@ export function AuthProvider({ children }) {
 			localStorage.removeItem('licensedb.codeVerifier');
 
 			const response = await axios.post(
-				process.env.REACT_APP_TOKEN_URL,
+				process.env.VITE_API_TOKEN_URL,
 				{
 					grant_type: 'authorization_code',
 					code: code,
-					redirect_uri: process.env.REACT_APP_REDIRECT_URL,
-					client_id: process.env.REACT_APP_CLIENT_ID,
+					redirect_uri: process.env.VITE_API_REDIRECT_URL,
+					client_id: process.env.VITE_API_CLIENT_ID,
 					code_verifier: codeVerifier,
 				},
 				{
@@ -90,7 +90,7 @@ export function AuthProvider({ children }) {
 			refresh_token = response.data.refresh_token;
 			expires_at = Date.now() + response.data.expires_in * MILLISEC;
 
-			const url = `${process.env.REACT_APP_BASE_URL}/users/oidc`;
+			const url = `${process.env.VITE_API_BASE_URL}/users/oidc`;
 			await axios.post(
 				url,
 				{},
@@ -165,10 +165,10 @@ async function getAccessTokenFromRefreshToken() {
 		const refresh_token = localStorage.getItem('licensedb.refresh_token');
 
 		const response = await axios.post(
-			process.env.REACT_APP_TOKEN_URL,
+			process.env.VITE_API_TOKEN_URL,
 			{
 				grant_type: 'refresh_token',
-				client_id: process.env.REACT_APP_CLIENT_ID,
+				client_id: process.env.VITE_API_CLIENT_ID,
 				refresh_token: refresh_token,
 				scope: 'openid',
 			},
@@ -219,7 +219,7 @@ export async function GetToken() {
 	const BUFFER_TIME = 60 * MILLISEC * 10; // 10 mins
 	if (
 		Date.now() >= Number(expires_at) - BUFFER_TIME &&
-		process.env.REACT_APP_PROVIDER === 'oidc'
+		process.env.VITE_API_PROVIDER === 'oidc'
 	) {
 		await getAccessTokenFromRefreshToken();
 		token = localStorage.getItem('licensedb.token');

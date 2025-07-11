@@ -11,7 +11,7 @@ import Select from 'react-select';
 import { TbListDetails } from 'react-icons/tb';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
-import CustomSelect from '../components/customStyleSelect';
+import CustomSelect from './customStyleSelect';
 import { riskOptions } from '../utils/data/dropdownOptions';
 import ToolTipLegend from './tooltip/tooltipLegend';
 import ToolTipLabel from './tooltip/tooltipLabel';
