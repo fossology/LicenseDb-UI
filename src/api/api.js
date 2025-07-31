@@ -487,3 +487,30 @@ export const fetchApiAuthSettings = async () => {
 	const response = await axios.get(url);
 	return response.data;
 };
+
+
+export const fetchSimilarObligations = async (text) => {
+	const url = `${process.env.REACT_APP_BASE_URL}/obligations/similarity`;
+	const headers = {};
+
+	if (isApiAuthenticated('obligations/similarity', 'post')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+
+	const response = await axios.post(url, { text }, { headers });
+	return response.data;
+};
+
+export const fetchSimilarLicenses = async (text) => {
+	const url = `${process.env.REACT_APP_BASE_URL}/licenses/similarity`;
+	const headers = {};
+
+	if (isApiAuthenticated('licenses/similarity', 'post')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+
+	const response = await axios.post(url, { text }, { headers });
+	return response.data;
+};

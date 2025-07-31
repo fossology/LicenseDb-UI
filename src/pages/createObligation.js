@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: © 2025 Siemens AG
 // SPDX-FileContributor: Sourav Bhowmik <sourav.bhowmik@siemens.com>
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import '../styles/createFormView.css';
 import Select from 'react-select';
@@ -11,11 +11,14 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import CustomSelect from '../components/customStyleSelect';
 import { categoryOptions } from '../utils/data/dropdownOptions';
+import SimilarityResultList from '../components/findsimilar';
+
 import {
 	postObligation,
 	fetchObligationTypes,
 	fetchObligationClassfications,
 	fetchLicensePreviews,
+	fetchSimilarObligations
 } from '../api/api';
 
 function CreateObligation() {
@@ -66,8 +69,28 @@ function CreateObligation() {
 	};
 
 	const [obligationData, setObligationData] = useState(initialObligationData);
-
+	const [similarObligations, setSimilarObligations] = useState([]);
 	const [selectedValues, setSelectedValues] = useState([]);
+	useEffect(() => {
+		const delayDebounce = setTimeout(() => {
+			if (obligationData.text) {
+				fetchSimilarObligations(obligationData.text)
+					.then((res) => {
+						console.log('Similar obligation:', res.data);
+						setSimilarObligations(res.data);
+					})
+					.catch((err) => {
+						console.error('Error:', err);
+						setSimilarObligations([]);
+					});
+			} else {
+				setSimilarObligations([]);
+			}
+		}, 500); // debounce time
+
+		return () => clearTimeout(delayDebounce);
+	}, [obligationData.text]);
+
 	const handleChange = e => {
 		if (e && e.target) {
 			const { name, value, type, checked } = e.target;
@@ -291,6 +314,14 @@ function CreateObligation() {
 							/>
 						</Form.Group>
 					</Col>
+					{Array.isArray(similarObligations) && similarObligations.length > 0 && (
+						<Col>
+							<SimilarityResultList
+								list={similarObligations}
+								header="Obligation"
+							/>
+						</Col>
+					)}
 				</Row>
 
 				<Button variant="outline-success" type="submit">
