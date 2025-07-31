@@ -10,9 +10,10 @@ import { useMutation } from '@tanstack/react-query';
 import '../styles/createFormView.css';
 import CustomSelect from '../components/customStyleSelect';
 import { riskOptions } from '../utils/data/dropdownOptions';
-import { postLicense } from '../api/api';
+import { postLicense, fetchSimilarLicenses } from '../api/api';
 import { loadYaml } from '../utils/loadYaml';
 import { resolveComponentPath } from '../utils/componentPathMap';
+import SimilarityResultList from '../components/findsimilar';
 
 function CreateLicense() {
 	const [fields, setFields] = useState([]);
@@ -38,6 +39,7 @@ function CreateLicense() {
 		text_updatable: false,
 	};
 	const [licenseData, setLicenseData] = useState(initialLicenseData);
+	const [similarLicenses, setSimilarLicenses] = useState([]);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -50,6 +52,27 @@ function CreateLicense() {
 
 		fetchConfig();
 	}, []);
+
+	useEffect(() => {
+		const delayDebounce = setTimeout(() => {
+			if (licenseData.text) {
+				fetchSimilarLicenses(licenseData.text)
+					.then((res) => {
+						console.log('Similar licenses:', res.data);
+						setSimilarLicenses(res.data);
+					})
+					.catch((err) => {
+						console.error('Error:', err);
+						setSimilarLicenses([]);
+					});
+			} else {
+				setSimilarLicenses([]);
+			}
+		}, 500); // debounce time
+
+		return () => clearTimeout(delayDebounce);
+	}, [licenseData.text]);
+
 
 	const handleChange = e => {
 		if (e && e.target) {
@@ -150,7 +173,7 @@ function CreateLicense() {
 								checked={
 									componentType === 'checkbox'
 										? licenseData.external_ref[name] ||
-											false
+										false
 										: undefined
 								}
 								onChange={handleChangeExt}
@@ -346,6 +369,15 @@ function CreateLicense() {
 							/>
 						</Form.Group>
 					</Col>
+					{Array.isArray(similarLicenses) && similarLicenses.length > 0 && (
+						<Col>
+							<SimilarityResultList
+								list={similarLicenses}
+								header="License"
+							/>
+						</Col>
+					)}
+
 				</Row>
 
 				<Button variant="outline-success" type="submit">
