@@ -1,3 +1,5 @@
+// SPDX-FileContributor: Chirag Varu <chiragvaru.main@gmail.com>
+
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
