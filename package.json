@@ -22,7 +22,7 @@
     "react-select": "^5.8.0",
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.0.5",
-    "styled-components": "^6.1.1"
+    "styled-components": "^6.3.11"
   },
   "scripts": {
     "start": "react-scripts start",
