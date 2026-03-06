@@ -19,7 +19,7 @@ const DiffModal = ({ show, handleClose, audit }) => {
 	const single_audit = audit?.audit;
 	const auditDetails = data?.data;
 	return (
-		<Modal show={show} onHide={handleClose} size="lg" centered>
+		<Modal show={show} onHide={handleClose} size="xl" centered>
 			<Modal.Header closeButton>
 				<Modal.Title>
 					<b>{audit?.auditType}</b>&nbsp;

@@ -3,10 +3,9 @@
 	SPDX-FileCopyrightText: © 2025 Siemens AG
 	SPDX-FileContributor: 2025 Chayan Das <01chayandas@gmail.com>
 */
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button } from 'react-bootstrap';
-import DiffViewer, { DiffMethod } from 'react-diff-viewer-continued';
+import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer-continued';
 
 const TextDiffModal = ({
 	show,
@@ -18,7 +17,7 @@ const TextDiffModal = ({
 	newText,
 }) => {
 	return (
-		<Modal show={show} onHide={handleClose} size="lg" centered>
+		<Modal show={show} onHide={handleClose} size="xl" centered>
 			<Modal.Header closeButton>
 				<Modal.Title>
 					<b>{title}</b>
@@ -32,12 +31,12 @@ const TextDiffModal = ({
 			</Modal.Header>
 
 			<Modal.Body>
-				<DiffViewer
-					oldValue={oldText || ''}
-					newValue={newText || ''}
-					splitView={true}
-					compareMethod={DiffMethod.WORDS}
-				/>
+					<ReactDiffViewer
+						oldValue={oldText || ''}
+						newValue={newText || ''}
+						splitView={true}
+						compareMethod={DiffMethod.WORDS}
+					/>
 			</Modal.Body>
 
 			<Modal.Footer>
