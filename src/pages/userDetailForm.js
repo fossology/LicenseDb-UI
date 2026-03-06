@@ -54,7 +54,7 @@ function UserDetailForm({ userPayload, setUserPayload, page, perPage }) {
 					const newData = {
 						...oldData,
 						data: oldData.data.map(user => {
-							if (user.user_name === data.data[0].user_name) {
+							if (user.id === data.data[0].id) {
 								return data.data[0];
 							} else {
 								return user;

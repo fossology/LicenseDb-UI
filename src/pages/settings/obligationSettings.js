@@ -89,7 +89,7 @@ function ObligationSettings() {
 				},
 			);
 		},
-		onSuccess: data => {
+		onSuccess: () => {
 			toast.success('Obligation type deleted successfully!', {
 				position: 'top-right',
 				autoClose: 3000,
@@ -287,9 +287,9 @@ function ObligationSettings() {
 									{isPickerVisible && (
 										<SketchPicker
 											color={color}
-											onChangeComplete={color =>
-												setColor(color.hex)
-											}
+											onChangeComplete={color => {
+												setColor(color.hex);
+											}}
 											closePicker={() =>
 												setIsPickerVisible(false)
 											}

@@ -168,14 +168,10 @@ export const postUser = async ({ userPayload }) => {
 	return response.data;
 };
 
-export const updateLicense = async ({
-	licensePayload,
-	accessToken,
-	shortname,
-}) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/licenses/${encodeURIComponent(shortname)}`;
+export const updateLicense = async ({ licensePayload, id }) => {
+	const url = `${process.env.REACT_APP_BASE_URL}/licenses/${encodeURIComponent(id)}`;
 	const headers = {};
-	if (isApiAuthenticated('licenses/{shortname}', 'patch')) {
+	if (isApiAuthenticated('licenses/{id}', 'patch')) {
 		const token = await GetToken();
 		headers['Authorization'] = `Bearer ${token}`;
 	}
@@ -185,34 +181,14 @@ export const updateLicense = async ({
 	return response.data;
 };
 
-export const updateObligation = async ({
-	obligationPayload,
-	accessToken,
-	topic,
-}) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligations/${encodeURIComponent(topic)}`;
+export const updateObligation = async ({ obligationPayload, id }) => {
+	const url = `${process.env.REACT_APP_BASE_URL}/obligations/${encodeURIComponent(id)}`;
 	const headers = {};
-	if (isApiAuthenticated('obligations/{topic}', 'patch')) {
+	if (isApiAuthenticated('obligations/{id}', 'patch')) {
 		const token = await GetToken();
 		headers['Authorization'] = `Bearer ${token}`;
 	}
 	const response = await axios.patch(url, obligationPayload, {
-		headers,
-	});
-	return response.data;
-};
-
-export const updateObligationWithLicenses = async ({
-	associated_licenses,
-	topic,
-}) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligation_maps/topic/${encodeURIComponent(topic)}/license`;
-	const headers = {};
-	if (isApiAuthenticated('obligation_maps/topic/{topic}/license', 'put')) {
-		const token = await GetToken();
-		headers['Authorization'] = `Bearer ${token}`;
-	}
-	const response = await axios.put(url, associated_licenses, {
 		headers,
 	});
 	return response.data;
@@ -300,8 +276,8 @@ export const fetchObligationPreviews = async () => {
 	return response.data;
 };
 
-export const fetchObligationsOfLicense = async ({ shortname }) => {
-	const url = `${process.env.REACT_APP_BASE_URL}/obligation_maps/license/${encodeURIComponent(shortname)}`;
+export const fetchObligationsOfLicense = async ({ id }) => {
+	const url = `${process.env.REACT_APP_BASE_URL}/obligation_maps/license/${encodeURIComponent(id)}`;
 	const headers = {};
 	if (isApiAuthenticated('obligation_maps/license/{license}', 'get')) {
 		const token = await GetToken();
@@ -314,10 +290,9 @@ export const fetchObligationsOfLicense = async ({ shortname }) => {
 };
 
 export const updateObligationsOfLicense = async ({
-	shortname,
+	id,
 	initialObligations,
 	finalObligations,
-	accessToken,
 }) => {
 	const changes = {};
 	for (const ob of initialObligations) {
@@ -325,7 +300,7 @@ export const updateObligationsOfLicense = async ({
 			changes[ob] = [
 				{
 					add: false,
-					shortname,
+					id,
 				},
 			];
 		}
@@ -335,21 +310,23 @@ export const updateObligationsOfLicense = async ({
 			changes[ob] = [
 				{
 					add: true,
-					shortname,
+					id,
 				},
 			];
 		}
 	}
 
 	const headers = {};
-	if (isApiAuthenticated('obligation_maps/topic/{topic}/license', 'patch')) {
+	if (
+		isApiAuthenticated('obligation_maps/obligation/{id}/license', 'patch')
+	) {
 		const token = await GetToken();
 		headers['Authorization'] = `Bearer ${token}`;
 	}
-	const obligationUpdatePromises = Object.keys(changes).map(topic =>
+	const obligationUpdatePromises = Object.keys(changes).map(id =>
 		axios.patch(
-			`${process.env.REACT_APP_BASE_URL}/obligation_maps/topic/${encodeURIComponent(topic)}/license`,
-			{ map: changes[topic] },
+			`${process.env.REACT_APP_BASE_URL}/obligation_maps/obligation/${encodeURIComponent(id)}/license`,
+			{ map: changes[id] },
 			{
 				headers,
 			},

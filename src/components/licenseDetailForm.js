@@ -4,13 +4,21 @@
 // SPDX-FileContributor: Dearsh Oberoi <dearsh.oberoi@siemens.com>
 
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form } from 'react-bootstrap';
+import {
+	Row,
+	Col,
+	Form,
+	InputGroup,
+	OverlayTrigger,
+	Tooltip,
+} from 'react-bootstrap';
 import '../styles/detailViewForm.css';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import Select from 'react-select';
 import { TbListDetails } from 'react-icons/tb';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import { BsClipboard } from 'react-icons/bs';
 import CustomSelect from '../components/customStyleSelect';
 import { riskOptions } from '../utils/data/dropdownOptions';
 import ToolTipLegend from './tooltip/tooltipLegend';
@@ -20,8 +28,6 @@ import SimilarityResultList from '../components/SimilarityResultList';
 import {
 	fetchObligationPreviews,
 	updateLicense,
-	fetchObligationsOfLicense,
-	updateObligationsOfLicense,
 	fetchSimilarLicenses,
 } from '../api/api';
 import 'react-toastify/dist/ReactToastify.css';
@@ -37,7 +43,6 @@ function LicenseDetailForm({
 	sortOrder,
 }) {
 	const [showModal, setShowModal] = useState(false);
-	const [finalObligations, setFinalObligations] = useState([]);
 	const queryClient = useQueryClient();
 	const [fields, setFields] = useState([]);
 	const [similarLicenses, setSimilarLicenses] = useState([]);
@@ -47,7 +52,7 @@ function LicenseDetailForm({
 			const config = await loadYaml(
 				`${process.env.PUBLIC_URL}/externalRef.yaml`,
 			);
-			setFields(config.fields);
+			setFields(config.license.fields);
 		};
 
 		fetchConfig();
@@ -70,11 +75,11 @@ function LicenseDetailForm({
 					.then(res => {
 						let filtered = res.data || [];
 						filtered = filtered.filter(
-							item => item.shortname !== licensePayload.shortname,
+							item => item.id !== licensePayload.id,
 						);
 						setSimilarLicenses(filtered);
 					})
-					.catch(err => {
+					.catch(() => {
 						setSimilarLicenses([]);
 					});
 			} else {
@@ -83,7 +88,7 @@ function LicenseDetailForm({
 		}, 500); // debounce time
 
 		return () => clearTimeout(delayDebounce);
-	}, [licensePayload.text, licensePayload.shortname]);
+	}, [licensePayload.text, licensePayload.id]);
 
 	if (isObligationListFetchError) {
 		toast.error(
@@ -101,37 +106,10 @@ function LicenseDetailForm({
 		);
 	}
 
-	const {
-		isPending: isLicenseObligationsQueryPending,
-		isError: isLicenseObligationsFetchError,
-		error: licenseObligationsFetchError,
-		data: licenseObligationsData,
-	} = useQuery({
-		queryKey: ['license', 'obligations', licensePayload.shortname],
-		queryFn: () =>
-			fetchObligationsOfLicense({ shortname: licensePayload.shortname }),
-	});
-
-	if (isLicenseObligationsFetchError) {
-		toast.error(
-			`Unable to fetch attached obligations: ${licenseObligationsFetchError.message}`,
-			{
-				position: 'top-right',
-				autoClose: 3000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: 'light',
-			},
-		);
-	}
-
 	const updateLicenseMutation = useMutation({
 		mutationFn: updateLicense,
-		onError: error => {
-			toast.error(`License update failed: ${error.response.data.error}`, {
+		onError: err => {
+			toast.error(`License update failed: ${err.response.data.error}`, {
 				position: 'top-right',
 				hideProgressBar: false,
 				closeOnClick: true,
@@ -159,7 +137,7 @@ function LicenseDetailForm({
 						const newData = {
 							...oldData,
 							data: oldData.data.map(lic => {
-								if (lic.shortname === data.data[0].shortname) {
+								if (lic.id === data.data[0].id) {
 									return data.data[0];
 								} else {
 									return lic;
@@ -171,38 +149,6 @@ function LicenseDetailForm({
 				);
 				queryClient.invalidateQueries('audits');
 			}
-		},
-	});
-
-	const updateLicenseObligationsMutation = useMutation({
-		mutationFn: updateObligationsOfLicense,
-		onError: error => {
-			toast.error(
-				`License obligations update failed: ${error.response.data.error}`,
-				{
-					position: 'top-right',
-					autoClose: 3000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-					theme: 'light',
-				},
-			);
-		},
-		onSuccess: () => {
-			toast.success('License obligations updated successfully!', {
-				position: 'top-right',
-				autoClose: 3000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: 'dark',
-			});
-			queryClient.invalidateQueries('audits');
 		},
 	});
 
@@ -307,6 +253,37 @@ function LicenseDetailForm({
 							<Form.Group className="form-group-text">
 								<Form.Label>
 									<ToolTipLabel
+										label={'Id'}
+										tooltipText={'Id'}
+									/>
+								</Form.Label>
+								<InputGroup>
+									<Form.Control
+										type="text"
+										placeholder="Id"
+										name="id"
+										value={licensePayload.id}
+										readOnly
+										disabled
+									/>
+									<OverlayTrigger
+										overlay={<Tooltip>{'Copy'}</Tooltip>}
+									>
+										<InputGroup.Text
+											onClick={() => {
+												navigator.clipboard.writeText(
+													licensePayload.id,
+												);
+											}}
+										>
+											<BsClipboard />
+										</InputGroup.Text>
+									</OverlayTrigger>
+								</InputGroup>
+							</Form.Group>
+							<Form.Group className="form-group-text">
+								<Form.Label>
+									<ToolTipLabel
 										label={'Short Name'}
 										tooltipText={'Short Name'}
 									/>
@@ -316,8 +293,7 @@ function LicenseDetailForm({
 									placeholder="Short Name"
 									name="shortname"
 									value={licensePayload.shortname}
-									readOnly
-									disabled
+									onChange={handleInputChange}
 								/>
 							</Form.Group>
 						</Row>
@@ -495,46 +471,53 @@ function LicenseDetailForm({
 										Overviews
 									</a>
 								</Form.Label>
-								{!isObligationsPreviewQueryPending &&
-									!isLicenseObligationsQueryPending && (
-										<Select
-											key={JSON.stringify({
-												shortname:
-													licensePayload.shortname,
-												licenseObligationsData,
-											})}
-											options={(
+								{!isObligationsPreviewQueryPending && (
+									<Select
+										options={(
+											allObligationData?.data ?? []
+										).map(d => ({
+											value: d.id,
+											label: `${d.type}: ${d.topic} (Id: ${d.id})`,
+										}))}
+										defaultValue={(
+											licensePayload?.obligation_ids ?? []
+										).map(id => {
+											const obl_index = (
 												allObligationData?.data ?? []
-											).map(d => ({
-												value: d.topic,
-												label: `${d.type}: ${d.topic}`,
-											}))}
-											defaultValue={(
-												licenseObligationsData?.data ??
-												[]
-											).map(ob => ({
-												value: ob.topic,
-												label: `${ob.type}: ${ob.topic}`,
-											}))}
-											onChange={selectedObligations => {
-												setFinalObligations(
+											).findIndex(ob => ob.id === id);
+											if (obl_index === -1) return null;
+											const elem =
+												allObligationData.data[
+													obl_index
+												];
+											return {
+												value: elem.id,
+												label: `${elem.type}: ${elem.topic} (Id: ${elem.id})`,
+											};
+										})}
+										onChange={selectedObligations => {
+											setLicensePayload({
+												...licensePayload,
+												obligation_ids:
 													selectedObligations.map(
 														ob => ob.value,
 													),
-												);
-											}}
-											isSearchable
-											closeMenuOnSelect={false}
-											isMulti
-											cacheOptions={false}
-										/>
-									)}
+											});
+										}}
+										isSearchable
+										closeMenuOnSelect={false}
+										isMulti
+										cacheOptions={false}
+									/>
+								)}
 							</Form.Group>
 						</Row>
 
 						{/* Dynamically render fields */}
 						<div className="ext-fields">
-							{fields.map(field => renderFormField(field))}
+							{(fields ?? []).map(field =>
+								renderFormField(field),
+							)}
 						</div>
 					</Col>
 					<Col>
@@ -560,7 +543,7 @@ function LicenseDetailForm({
 								list={similarLicenses}
 								header="License"
 								text={licensePayload.text}
-								label={licensePayload.shortname}
+								label={`${licensePayload.shortname} (Id: ${licensePayload.id})`}
 							/>
 						)}
 					</Col>
@@ -570,26 +553,15 @@ function LicenseDetailForm({
 					<button
 						type="button"
 						className="btn btn-primary"
-						disabled={
-							updateLicenseMutation.isPending ||
-							updateLicenseObligationsMutation.isPending
-						}
+						disabled={updateLicenseMutation.isPending}
 						onClick={e => {
 							updateLicenseMutation.mutate({
 								licensePayload,
-								shortname: licensePayload.shortname,
-							});
-							updateLicenseObligationsMutation.mutate({
-								shortname: licensePayload.shortname,
-								initialObligations: (
-									licenseObligationsData?.data ?? []
-								).map(ob => ob.topic),
-								finalObligations,
+								id: licensePayload.id,
 							});
 						}}
 					>
-						{(updateLicenseMutation.isPending ||
-							updateLicenseObligationsMutation.isPending) && (
+						{updateLicenseMutation.isPending && (
 							<span
 								className="spinner-border spinner-border-sm me-1"
 								role="status"
@@ -605,7 +577,8 @@ function LicenseDetailForm({
 
 LicenseDetailForm.propTypes = {
 	licensePayload: PropTypes.shape({
-		shortname: PropTypes.string.isRequired,
+		id: PropTypes.string.isRequired,
+		shortname: PropTypes.string,
 		fullname: PropTypes.string,
 		spdx_id: PropTypes.string,
 		risk: PropTypes.number,
@@ -615,6 +588,7 @@ LicenseDetailForm.propTypes = {
 		text_updatable: PropTypes.bool,
 		external_ref: PropTypes.object,
 		text: PropTypes.string,
+		obligation_ids: PropTypes.arrayOf(PropTypes.string),
 	}).isRequired,
 	setLicensePayload: PropTypes.func.isRequired,
 	page: PropTypes.number.isRequired,

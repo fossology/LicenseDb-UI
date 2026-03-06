@@ -48,3 +48,11 @@ code {
 	padding: 5px;
 	margin-bottom: 10px;
 }
+
+.single-line-preview {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+	display: inline-block;
+}

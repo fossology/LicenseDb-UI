@@ -3,7 +3,7 @@
 // SPDX-FileContributor: Sourav Bhowmik <sourav.bhowmik@siemens.com>
 // SPDX-FileContributor: 2025 Chayan Das <01chayandas@gmail.com>
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import '../styles/createFormView.css';
 import Select from 'react-select';
@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import CustomSelect from '../components/customStyleSelect';
 import { categoryOptions } from '../utils/data/dropdownOptions';
 import SimilarityResultList from '../components/SimilarityResultList';
+import { resolveComponentPath } from '../utils/componentPathMap';
+import { loadYaml } from '../utils/loadYaml';
 
 import {
 	postObligation,
@@ -23,15 +25,26 @@ import {
 } from '../api/api';
 
 function CreateObligation() {
-	const { data } = useQuery({
+	const [fields, setFields] = useState([]);
+	const { data: licenseData } = useQuery({
 		queryKey: ['licenses', 'preview'],
 		queryFn: () => fetchLicensePreviews(),
 		placeholderData: keepPreviousData,
 	});
-	const licenseShortNames = (data?.shortnames ?? []).map(x => ({
-		label: x,
-		value: x,
+	const licenseOptions = licenseData?.licenses?.map(l => ({
+		value: l.id,
+		label: `${l.shortname} (Id:${l.id})`,
 	}));
+	useEffect(() => {
+		const fetchConfig = async () => {
+			const config = await loadYaml(
+				`${process.env.PUBLIC_URL}/externalRef.yaml`,
+			);
+			setFields(config.fields);
+		};
+
+		fetchConfig();
+	}, []);
 
 	const navigate = useNavigate();
 
@@ -60,7 +73,6 @@ function CreateObligation() {
 		active: true,
 		classification: '',
 		comment: '',
-		modifications: true,
 		shortnames: [],
 		text: '',
 		text_updatable: true,
@@ -107,7 +119,7 @@ function CreateObligation() {
 			: [];
 		setObligationData({
 			...obligationData,
-			shortnames: values,
+			license_ids: values,
 		});
 	};
 	const handleTypeChange = e => {
@@ -139,7 +151,7 @@ function CreateObligation() {
 				},
 			);
 		},
-		onSuccess: data => {
+		onSuccess: () => {
 			toast.success('Obligation created successfully!', {
 				position: 'top-right',
 				autoClose: 3000,
@@ -158,11 +170,65 @@ function CreateObligation() {
 		mutation.mutate({
 			obligationPayload: obligationData,
 		});
+		navigate('/obligation');
 	};
 
 	const handleReset = () => {
 		setSelectedValues([]);
 		setObligationData({ ...initialObligationData });
+	};
+
+	const handleChangeExt = e => {
+		if (e && e.target) {
+			const { name, value, type, checked } = e.target;
+			const fieldValue = type === 'checkbox' ? checked : value;
+			setObligationData(prevData => ({
+				...prevData,
+				external_ref: {
+					...prevData.external_ref,
+					[name]: fieldValue,
+				},
+			}));
+		} else {
+			const { name, value } = e.target;
+			setObligationData(prevData => ({
+				...prevData,
+				external_ref: {
+					...prevData.external_ref,
+					[name]: value,
+				},
+			}));
+		}
+	};
+
+	const renderFormField = field => {
+		const { formComponentPath, name, componentType, label } = field;
+		const Component = resolveComponentPath(formComponentPath);
+
+		return (
+			<Row key={name}>
+				<Col>
+					<Form.Group
+						className={`form-fields form-group-${componentType}`}
+					>
+						<Suspense fallback={<div>Loading...</div>}>
+							<Component
+								label={label}
+								name={name}
+								value={obligationData.external_ref[name] || ''}
+								checked={
+									componentType === 'checkbox'
+										? obligationData.external_ref[name] ||
+											false
+										: undefined
+								}
+								onChange={handleChangeExt}
+							/>
+						</Suspense>
+					</Form.Group>
+				</Col>
+			</Row>
+		);
 	};
 
 	return (
@@ -191,20 +257,14 @@ function CreateObligation() {
 							<Col>
 								<Form.Group className="form-fields">
 									<Form.Label className="d-inline-flex">
-										Type
+										Classification
 									</Form.Label>
 									<span className="ms-1 text-danger">*</span>
-									<Select
-										value={
-											obligationTypes?.find(
-												option =>
-													option.value ===
-													obligationData['type'],
-											) || null
-										}
-										options={obligationTypes}
-										onChange={handleTypeChange}
-										isSearchable
+									<CustomSelect
+										name="classification"
+										options={classOptions}
+										payload={obligationData}
+										setPayload={setObligationData}
 									/>
 								</Form.Group>
 							</Col>
@@ -234,27 +294,20 @@ function CreateObligation() {
 							<Col>
 								<Form.Group className="form-fields">
 									<Form.Label className="d-inline-flex">
-										Classification
+										Type
 									</Form.Label>
 									<span className="ms-1 text-danger">*</span>
-									<CustomSelect
-										name="classification"
-										options={classOptions}
-										payload={obligationData}
-										setPayload={setObligationData}
-									/>
-								</Form.Group>
-							</Col>
-							<Col>
-								<Form.Group className="form-fields">
-									<Form.Label>Associated Licenses</Form.Label>
 									<Select
-										options={licenseShortNames}
-										value={selectedValues}
-										onChange={handleLicenseChange}
-										closeMenuOnSelect={false}
+										value={
+											obligationTypes?.find(
+												option =>
+													option.value ===
+													obligationData['type'],
+											) || null
+										}
+										options={obligationTypes}
+										onChange={handleTypeChange}
 										isSearchable
-										isMulti
 									/>
 								</Form.Group>
 							</Col>
@@ -297,6 +350,24 @@ function CreateObligation() {
 								</Form.Group>
 							</Col>
 						</Row>
+						<Row>
+							<Form.Group className="form-fields">
+								<Form.Label>Associated Licenses</Form.Label>
+								<Select
+									options={licenseOptions}
+									value={selectedValues}
+									onChange={handleLicenseChange}
+									closeMenuOnSelect={false}
+									isSearchable
+									isMulti
+								/>
+							</Form.Group>
+						</Row>
+						<div className="ext-fields">
+							{(fields ?? []).map(field =>
+								renderFormField(field),
+							)}
+						</div>
 					</Col>
 					<Col>
 						<Form.Group className="form-fields">

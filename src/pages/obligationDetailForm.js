@@ -4,7 +4,14 @@
 // SPDX-FileContributor: Dearsh Oberoi <dearsh.oberoi@siemens.com>
 
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Form } from 'react-bootstrap';
+import {
+	Row,
+	Col,
+	Form,
+	InputGroup,
+	OverlayTrigger,
+	Tooltip,
+} from 'react-bootstrap';
 import '../styles/detailViewForm.css';
 import {
 	useQuery,
@@ -15,6 +22,7 @@ import {
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import { BsClipboard } from 'react-icons/bs';
 import CustomSelect from '../components/customStyleSelect';
 import ToolTipLabel from '../components/tooltip/tooltipLabel';
 import ToolTipLegend from '../components/tooltip/tooltipLegend';
@@ -25,10 +33,11 @@ import {
 	fetchLicensePreviews,
 	fetchObligationTypes,
 	fetchObligationClassfications,
-	updateObligationWithLicenses,
 	fetchSimilarObligations,
 } from '../api/api';
 import SimilarityResultList from '../components/SimilarityResultList';
+import { loadYaml } from '../utils/loadYaml';
+import { resolveComponentPath } from '../utils/componentPathMap';
 
 function ObligationDetailForm({
 	obligationPayload,
@@ -46,7 +55,7 @@ function ObligationDetailForm({
 					.then(res => {
 						let filtered = res.data || [];
 						filtered = filtered.filter(
-							item => item.topic !== obligationPayload.topic,
+							item => item.id !== obligationPayload.id,
 						);
 						setSimilarObligations(filtered);
 					})
@@ -72,23 +81,27 @@ function ObligationDetailForm({
 	}));
 
 	const [selectedLicenses, setSelectedLicenses] = useState([]);
-	const { data: licenseShortNames } = useQuery({
+	const { data: licenseData } = useQuery({
 		queryKey: ['licenses', 'preview'],
 		queryFn: () => fetchLicensePreviews(),
 		placeholderData: keepPreviousData,
 	});
-	const licenseOptions = licenseShortNames?.shortnames?.map(shortname => ({
-		value: shortname,
-		label: shortname,
+	const licenseOptions = (licenseData?.licenses ?? []).map(l => ({
+		value: l.id,
+		label: `${l.shortname} (Id:${l.id})`,
 	}));
 	useEffect(() => {
+		if (!obligationPayload || !licenseData) return;
 		const defaultLicenses =
-			obligationPayload.shortnames?.map(shortname => ({
-				value: shortname,
-				label: shortname,
-			})) || [];
+			obligationPayload.license_ids.map(id => {
+				const lic = licenseData.licenses.filter(l => l.id === id);
+				return {
+					value: lic[0].id,
+					label: `${lic[0].shortname} (Id:${lic[0].id})`,
+				};
+			}) || [];
 		setSelectedLicenses(defaultLicenses);
-	}, [obligationPayload]);
+	}, [obligationPayload, licenseData]);
 
 	const { data: obligationClass } = useQuery({
 		queryKey: ['obligations', 'classification'],
@@ -134,16 +147,11 @@ function ObligationDetailForm({
 				oldData => {
 					const newData = {
 						...oldData,
-						data: oldData?.data.map(lic => {
-							if (lic.topic === data.data[0].topic) {
-								return {
-									...data.data[0], // Updated obligation from mutation response
-									shortnames:
-										obligationPayload.shortnames ||
-										lic.shortnames, // Merge shortnames
-								};
+						data: oldData?.data.map(ob => {
+							if (ob.id === data.data[0].id) {
+								return data.data[0];
 							} else {
-								return lic;
+								return ob;
 							}
 						}),
 					};
@@ -161,41 +169,10 @@ function ObligationDetailForm({
 		});
 	};
 
-	const licenseMutation = useMutation({
-		mutationFn: updateObligationWithLicenses,
-		onError: error => {
-			toast.error(
-				`Could not add licenses: ${error.response.data.error}`,
-				{
-					position: 'top-right',
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-					theme: 'dark',
-				},
-			);
-		},
-		onSuccess: data => {
-			toast.success('Associated licenses added successfully!', {
-				position: 'top-right',
-				autoClose: 3000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: 'dark',
-			});
-			queryClient.invalidateQueries('audits');
-		},
-	});
-
 	const handleLicenseChange = associatedLicenses => {
 		setObligationPayload({
 			...obligationPayload,
-			['shortnames']: associatedLicenses?.map(x => x.value),
+			license_ids: associatedLicenses?.map(x => x.value),
 		});
 	};
 
@@ -215,16 +192,9 @@ function ObligationDetailForm({
 
 	const handleSubmit = async e => {
 		e.preventDefault();
-		const updatedMap = obligationPayload.shortnames?.map(x => x);
-
-		licenseMutation.mutate({
-			associated_licenses: { shortnames: updatedMap },
-			topic: obligationPayload.topic,
-		});
-
 		mutation.mutate({
 			obligationPayload,
-			topic: obligationPayload.topic,
+			id: obligationPayload.id,
 		});
 	};
 
@@ -235,6 +205,74 @@ function ObligationDetailForm({
 		});
 	};
 
+	const [fields, setFields] = useState([]);
+	useEffect(() => {
+		const fetchConfig = async () => {
+			const config = await loadYaml(
+				`${process.env.PUBLIC_URL}/externalRef.yaml`,
+			);
+			setFields(config.obligation.fields);
+		};
+
+		fetchConfig();
+	}, []);
+
+	const handleChangeExt = e => {
+		if (e && e.target) {
+			const { name, value, type, checked } = e.target;
+			const fieldValue = type === 'checkbox' ? checked : value;
+			setObligationPayload(prevData => ({
+				...prevData,
+				external_ref: {
+					...prevData.external_ref,
+					[name]: fieldValue,
+				},
+			}));
+		} else {
+			const { name, value } = e.target;
+			setObligationPayload(prevData => ({
+				...prevData,
+				external_ref: {
+					...prevData.external_ref,
+					[name]: value,
+				},
+			}));
+		}
+	};
+
+	const renderFormField = field => {
+		const { formComponentPath, name, componentType, label } = field;
+		const Component = resolveComponentPath(formComponentPath);
+
+		return (
+			<Row key={name}>
+				<Col>
+					<Form.Group
+						className={`form-fields form-group-${componentType}`}
+					>
+						<React.Suspense fallback={<div>Loading...</div>}>
+							<Component
+								label={label}
+								name={name}
+								value={
+									obligationPayload.external_ref[name] || ''
+								}
+								checked={
+									componentType === 'checkbox'
+										? obligationPayload.external_ref[
+												name
+											] || false
+										: undefined
+								}
+								onChange={handleChangeExt}
+							/>
+						</React.Suspense>
+					</Form.Group>
+				</Col>
+			</Row>
+		);
+	};
+
 	return (
 		<div className="detail-form-parent mb-5 shadow-sm">
 			<Form className="obligation-form" onSubmit={handleSubmit}>
@@ -242,6 +280,42 @@ function ObligationDetailForm({
 					<Col>
 						<Row>
 							<Col>
+								<Row>
+									<Form.Group className="form-group-text">
+										<Form.Label>
+											<ToolTipLabel
+												label={'Obligation Id'}
+												tooltipText={'Obligation Id'}
+											/>
+										</Form.Label>
+										<InputGroup>
+											<Form.Control
+												type="text"
+												placeholder="Obligation topic"
+												name="topic"
+												value={obligationPayload.id}
+												onChange={handleInputChange}
+												readOnly
+												disabled
+											/>
+											<OverlayTrigger
+												overlay={
+													<Tooltip>{'Copy'}</Tooltip>
+												}
+											>
+												<InputGroup.Text
+													onClick={() => {
+														navigator.clipboard.writeText(
+															obligationPayload.id,
+														);
+													}}
+												>
+													<BsClipboard />
+												</InputGroup.Text>
+											</OverlayTrigger>
+										</InputGroup>
+									</Form.Group>
+								</Row>
 								<Row>
 									<Form.Group className="form-group-text">
 										<Form.Label>
@@ -258,8 +332,6 @@ function ObligationDetailForm({
 											name="topic"
 											value={obligationPayload.topic}
 											onChange={handleInputChange}
-											readOnly
-											disabled
 										/>
 									</Form.Group>
 								</Row>
@@ -328,23 +400,42 @@ function ObligationDetailForm({
 									</Col>
 								</Row>
 								<Row>
+									<Form.Group className="form-group-text">
+										<Form.Label>
+											<ToolTipLabel
+												label={'Type'}
+												tooltipText={'Type'}
+											/>
+										</Form.Label>
+										<Select
+											options={typeOptions}
+											value={defaultType}
+											onChange={handleTypeChange}
+											isSearchable
+										/>
+									</Form.Group>
+								</Row>
+								<Row>
 									<Col>
-										<Form.Group className="form-group-text">
-											<Form.Label>
-												<ToolTipLabel
-													label={'Type'}
-													tooltipText={'Type'}
-												/>
-											</Form.Label>
-											<Select
-												options={typeOptions}
-												value={defaultType}
-												onChange={handleTypeChange}
-												isSearchable
+										<Form.Group className="form-fields">
+											<Form.Label>Comments</Form.Label>
+											<Form.Control
+												type="text"
+												name="comment"
+												value={
+													obligationPayload.comment
+												}
+												onChange={handleInputChange}
+												placeholder="Enter comment"
 											/>
 										</Form.Group>
 									</Col>
 								</Row>
+								<div className="ext-fields">
+									{(fields ?? []).map(field =>
+										renderFormField(field),
+									)}
+								</div>
 							</Col>
 							<Col>
 								<Form.Group className="form-group-text">
@@ -368,7 +459,7 @@ function ObligationDetailForm({
 										list={similarObligations}
 										header="Obligation"
 										text={obligationPayload.text}
-										label={obligationPayload.topic}
+										label={`${obligationPayload.topic} Id:(${obligationPayload.id})`}
 									/>
 								)}
 							</Col>
@@ -398,12 +489,15 @@ function ObligationDetailForm({
 
 ObligationDetailForm.propTypes = {
 	obligationPayload: PropTypes.shape({
+		id: PropTypes.string.isRequired,
 		topic: PropTypes.string.isRequired,
 		text: PropTypes.string,
-		shortnames: PropTypes.arrayOf(PropTypes.string),
+		license_ids: PropTypes.arrayOf(PropTypes.string),
 		classification: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired,
 		category: PropTypes.string.isRequired,
+		comment: PropTypes.string,
+		external_ref: PropTypes.object,
 	}).isRequired,
 	setObligationPayload: PropTypes.func.isRequired,
 	page: PropTypes.number.isRequired,
