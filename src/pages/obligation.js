@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom';
 import { GoPlusCircle } from 'react-icons/go';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import Button from 'react-bootstrap/Button';
-import ToolTipTruncate from '../components/tooltipWithTruncate';
 import { fetchObligations } from '../api/api';
 import ObligationDetailForm from './obligationDetailForm';
 import CustomColorCell from '../components/CustomColorCell';
@@ -66,7 +65,7 @@ function Obligation() {
 	const columns = [
 		{
 			name: 'Type',
-			maxWidth: '15%',
+			maxWidth: '20%',
 			selector: row => row.type,
 			wrap: true,
 		},
@@ -85,20 +84,12 @@ function Obligation() {
 		{
 			name: 'Full Text',
 			wrap: true,
-			maxWidth: '30%',
+			maxWidth: '50%',
 			style: {
 				textAlign: 'left',
 			},
-			cell: row => <ToolTipTruncate text={row.text ?? ''} />,
-		},
-		{
-			name: 'Associated Licenses',
-			wrap: true,
-			maxWidth: '25%',
 			cell: row => (
-				<ToolTipTruncate
-					text={row.shortnames ? row.shortnames.join(', ') : ''}
-				/>
+				<span className="single-line-preview">{row.text ?? ''}</span>
 			),
 		},
 		{
@@ -118,7 +109,7 @@ function Obligation() {
 	};
 
 	const handleRowClicked = row => {
-		if (obligationPayload && obligationPayload.topic === row.topic) {
+		if (obligationPayload && obligationPayload.id === row.id) {
 			setObligationPayload(null);
 		} else {
 			setObligationPayload(row);

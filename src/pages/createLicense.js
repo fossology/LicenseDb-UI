@@ -7,11 +7,16 @@ import React, { useState, useEffect } from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import '../styles/createFormView.css';
+import Select from 'react-select';
 import CustomSelect from '../components/customStyleSelect';
 import { riskOptions } from '../utils/data/dropdownOptions';
-import { postLicense, fetchSimilarLicenses } from '../api/api';
+import {
+	postLicense,
+	fetchSimilarLicenses,
+	fetchObligationPreviews,
+} from '../api/api';
 import { loadYaml } from '../utils/loadYaml';
 import { resolveComponentPath } from '../utils/componentPathMap';
 import SimilarityResultList from '../components/SimilarityResultList';
@@ -142,11 +147,38 @@ function CreateLicense() {
 		},
 	});
 
+	const {
+		isPending: isObligationsPreviewQueryPending,
+		isError: isObligationListFetchError,
+		error: obligationListFetchError,
+		data: allObligationData,
+	} = useQuery({
+		queryKey: ['obligations', 'preview'],
+		queryFn: () => fetchObligationPreviews(),
+	});
+
+	if (isObligationListFetchError) {
+		toast.error(
+			`Unable to fetch list of obligations: ${obligationListFetchError.message}`,
+			{
+				position: 'top-right',
+				autoClose: 3000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: 'light',
+			},
+		);
+	}
+
 	const handleSubmit = async e => {
 		e.preventDefault();
 		mutation.mutate({
 			licensePayload: licenseData,
 		});
+		navigate('/license');
 	};
 
 	const handleReset = () => {
@@ -343,10 +375,58 @@ function CreateLicense() {
 								</Form.Group>
 							</Col>
 						</Row>
+						<Row>
+							<Form.Group className="form-group-text">
+								<Form.Label className="d-inline-flex">
+									Obligations
+								</Form.Label>
+								{!isObligationsPreviewQueryPending && (
+									<Select
+										options={(
+											allObligationData?.data ?? []
+										).map(d => ({
+											value: d.id,
+											label: `${d.type}: ${d.topic} (Id: ${d.id})`,
+										}))}
+										defaultValue={(
+											licenseData?.obligation_ids ?? []
+										).map(id => {
+											const obl_index = (
+												allObligationData?.data ?? []
+											).findIndex(ob => ob.id === id);
+											if (obl_index === -1) return null;
+											const elem =
+												allObligationData.data[
+													obl_index
+												];
+											return {
+												value: elem.id,
+												label: `${elem.type}: ${elem.topic} (Id: ${elem.id})`,
+											};
+										})}
+										onChange={selectedObligations => {
+											setLicenseData({
+												...licenseData,
+												obligation_ids:
+													selectedObligations.map(
+														ob => ob.value,
+													),
+											});
+										}}
+										isSearchable
+										closeMenuOnSelect={false}
+										isMulti
+										cacheOptions={false}
+									/>
+								)}
+							</Form.Group>
+						</Row>
 
 						{/* Dynamically render fields */}
 						<div className="ext-fields">
-							{fields.map(field => renderFormField(field))}
+							{(fields ?? []).map(field =>
+								renderFormField(field),
+							)}
 						</div>
 					</Col>
 					<Col>

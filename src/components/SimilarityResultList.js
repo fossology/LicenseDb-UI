@@ -51,8 +51,8 @@ function SimilarityCard({ item, onClick }) {
 	const similarityPercent = (item.similarity ?? 0) * 100;
 
 	const getBadge = value => {
-		if (value >= 90) return { text: 'High Match', variant: 'danger' };
-		if (value >= 80) return { text: 'Good Match', variant: 'warning' };
+		if (value >= 95) return { text: 'High Match', variant: 'danger' };
+		if (value >= 90) return { text: 'Good Match', variant: 'warning' };
 		return { text: 'Partial Match', variant: 'success' };
 	};
 
@@ -62,7 +62,9 @@ function SimilarityCard({ item, onClick }) {
 		<Card onClick={onClick} className="p-3 cursor-pointer similarity-card">
 			<div className="d-flex justify-content-between align-items-center full-width">
 				<div className="card-left">
-					<h3 className="card-title">{displayName}</h3>
+					<h3 className="card-title">
+						{displayName} (Id: {item.id})
+					</h3>
 					<span className={`badge bg-${badge.variant} card-badge`}>
 						{badge.text}
 					</span>
@@ -86,7 +88,7 @@ const SimilarityResultList = ({
 
 	const handleSimClick = sim => {
 		setSelectedSim({
-			Id: sim.Id,
+			id: sim.id,
 			name: sim.shortname || sim.topic || 'Unnamed',
 			oldText: sim.text || '',
 			newText: text,
@@ -134,7 +136,7 @@ const SimilarityResultList = ({
 					show={isModalOpen}
 					handleClose={closeModal}
 					title="Text Comparison"
-					label1={selectedSim.name}
+					label1={`${selectedSim.name} (Id: ${selectedSim.id})`}
 					label2={label}
 					oldText={selectedSim.oldText}
 					newText={selectedSim.newText}
@@ -150,7 +152,7 @@ SimilarityCircle.propTypes = {
 
 SimilarityCard.propTypes = {
 	item: PropTypes.shape({
-		Id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		id: PropTypes.string,
 		shortname: PropTypes.string,
 		topic: PropTypes.string,
 		similarity: PropTypes.number,
@@ -162,7 +164,7 @@ SimilarityCard.propTypes = {
 SimilarityResultList.propTypes = {
 	list: PropTypes.arrayOf(
 		PropTypes.shape({
-			Id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			id: PropTypes.string,
 			shortname: PropTypes.string,
 			topic: PropTypes.string,
 			similarity: PropTypes.number,
