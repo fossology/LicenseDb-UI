@@ -12,7 +12,7 @@ import { MdOutlineAssignmentTurnedIn } from 'react-icons/md';
 import { PiMathOperationsFill } from 'react-icons/pi';
 import { IoIosLogIn } from 'react-icons/io';
 import { FaUserCircle } from 'react-icons/fa';
-import { GetTokenSync, Signout } from '../contexts/AuthContext';
+import { GetTokenSync, Signout } from '../contexts/AuthContext.jsx';
 import AppLogo from '../assets/images/logo.png';
 
 export default function LicenseDBNavbar() {

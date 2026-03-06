@@ -153,7 +153,7 @@ const router = createBrowserRouter(
 		},
 	],
 	{
-		basename: `/${process.env.REACT_APP_DOMAIN_SUBDIRECTORY}`,
+		basename: `/${import.meta.env.VITE_DOMAIN_SUBDIRECTORY}`,
 	},
 );
 

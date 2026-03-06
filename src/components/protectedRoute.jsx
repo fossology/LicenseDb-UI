@@ -5,7 +5,7 @@
 
 import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { GetTokenSync, GetUser } from '../contexts/AuthContext';
+import { GetTokenSync, GetUser } from '../contexts/AuthContext.jsx';
 
 function ProtectedRoute({ children, access }) {
 	const isLoggedIn = GetTokenSync() !== null;

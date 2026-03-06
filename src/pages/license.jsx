@@ -13,7 +13,7 @@ import CustomColorCell from '../components/CustomColorCell';
 import '../styles/dataTable.css';
 import '../styles/globalSearch.css';
 import SortableColumnHeader from '../components/SortableColumnHeader';
-import { GetTokenSync } from '../contexts/AuthContext';
+import { GetTokenSync } from '../contexts/AuthContext.jsx';
 import GlobalSearch from '../components/globalSearch';
 
 const DEFAULT_PER_PAGE = 10;
@@ -134,7 +134,7 @@ function License() {
 	};
 
 	const handleRowClicked = row => {
-		if (licensePayload && licensePayload.shortname === row.shortname) {
+		if (licensePayload && licensePayload.id === row.id) {
 			setLicensePayload(null);
 		} else {
 			setLicensePayload(row);

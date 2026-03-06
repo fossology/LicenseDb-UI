@@ -7,7 +7,7 @@ import { Container, Nav, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { IoSettings } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { GetTokenSync, GetUser } from '../contexts/AuthContext';
+import { GetTokenSync, GetUser } from '../contexts/AuthContext.jsx';
 
 const SettingsSubMenu = ({ route }) => {
 	const isLoggedIn = GetTokenSync() !== null;

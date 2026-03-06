@@ -12,7 +12,7 @@ import { MdOutlineAssignmentTurnedIn } from 'react-icons/md';
 import { PiMathOperationsFill } from 'react-icons/pi';
 import { IoIosLogIn } from 'react-icons/io';
 import { FaUserCircle } from 'react-icons/fa';
-import { Signout, GetTokenSync, GetUser } from '../contexts/AuthContext';
+import { Signout, GetTokenSync, GetUser } from '../contexts/AuthContext.jsx';
 import AppLogo from '../assets/images/logo.png';
 import SettingsSubMenu from './settingsSubMenu';
 import '../styles/sideBar.css';

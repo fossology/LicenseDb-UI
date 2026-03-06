@@ -37,16 +37,16 @@ export function AuthProvider({ children }) {
 
 	async function Signin(userCredentialsPayload) {
 		try {
-			const url = `${process.env.REACT_APP_BASE_URL}/login`;
+			const url = `${import.meta.env.VITE_BASE_URL}/login`;
 
 			const { data } = await axios.post(url, userCredentialsPayload);
 			const { access_token, refresh_token, expires_at } = data.data;
-
+			
 			const expiresAtMs = new Date(expires_at).getTime();
 			localStorage.setItem('licensedb.token', access_token);
 			localStorage.setItem('licensedb.refresh_token', refresh_token);
 			localStorage.setItem('licensedb.expires_at', expiresAtMs);
-
+			
 			const user = await fetchUserProfile(access_token);
 			localStorage.setItem(
 				'licensedb.user',
@@ -64,10 +64,10 @@ export function AuthProvider({ children }) {
 	async function OidcSignin() {
 		const { code_verifier, code_challenge } = await generatePKCE();
 		localStorage.setItem('licensedb.codeVerifier', code_verifier);
-		const auth_url = `${process.env.REACT_APP_AUTH_URL}?response_type=code&client_id=${
-			process.env.REACT_APP_CLIENT_ID
+		const auth_url = `${import.meta.env.VITE_AUTH_URL}?response_type=code&client_id=${
+			import.meta.env.VITE_CLIENT_ID
 		}&redirect_uri=${encodeURIComponent(
-			process.env.REACT_APP_REDIRECT_URL,
+			import.meta.env.VITE_REDIRECT_URL,
 		)}&scope=openid&code_challenge=${code_challenge}&code_challenge_method=S256&response_mode=fragment`;
 
 		window.location.href = auth_url;
@@ -83,12 +83,12 @@ export function AuthProvider({ children }) {
 			localStorage.removeItem('licensedb.codeVerifier');
 
 			const response = await axios.post(
-				process.env.REACT_APP_TOKEN_URL,
+				import.meta.env.VITE_TOKEN_URL,
 				{
 					grant_type: 'authorization_code',
 					code: code,
-					redirect_uri: process.env.REACT_APP_REDIRECT_URL,
-					client_id: process.env.REACT_APP_CLIENT_ID,
+					redirect_uri: import.meta.env.VITE_REDIRECT_URL,
+					client_id: import.meta.env.VITE_CLIENT_ID,
 					code_verifier: codeVerifier,
 				},
 				{
@@ -102,7 +102,7 @@ export function AuthProvider({ children }) {
 			refresh_token = response.data.refresh_token;
 			expires_at = Date.now() + response.data.expires_in * MILLISEC;
 
-			const url = `${process.env.REACT_APP_BASE_URL}/users/oidc`;
+			const url = `${import.meta.env.VITE_BASE_URL}/users/oidc`;
 			await axios.post(
 				url,
 				{},
@@ -166,7 +166,7 @@ export function Signout() {
 	localStorage.removeItem('licensedb.user');
 	localStorage.removeItem('licensedb.refresh_token');
 	localStorage.removeItem('licensedb.expires_at');
-	window.location.href = process.env.PUBLIC_URL;
+	window.location.href = '/';
 }
 
 async function getAccessTokenFromRefreshToken() {
@@ -175,12 +175,12 @@ async function getAccessTokenFromRefreshToken() {
 	let expires_at = null;
 	try {
 		const refresh_token = localStorage.getItem('licensedb.refresh_token');
-		if (process.env.REACT_APP_PROVIDER === 'oidc') {
+		if (import.meta.env.VITE_PROVIDER === 'oidc') {
 			const response = await axios.post(
-				process.env.REACT_APP_TOKEN_URL,
+				import.meta.env.VITE_TOKEN_URL,
 				{
 					grant_type: 'refresh_token',
-					client_id: process.env.REACT_APP_CLIENT_ID,
+					client_id: import.meta.env.VITE_CLIENT_ID,
 					refresh_token: refresh_token,
 					scope: 'openid',
 				},
@@ -206,7 +206,7 @@ async function getAccessTokenFromRefreshToken() {
 			);
 		} else {
 			// local
-			const url = `${process.env.REACT_APP_BASE_URL}/refresh-token`;
+			const url = `${import.meta.env.VITE_BASE_URL}/refresh-token`;
 			const { data } = await axios.post(url, {
 				refresh_token: refresh_token,
 			});

@@ -8,7 +8,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
 import { isAxiosError } from 'axios';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import AppLogo from '../assets/images/logo.png';
 
 export default function OAuthRedirect() {
