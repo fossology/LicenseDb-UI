@@ -51,7 +51,7 @@ function CreateLicense() {
 	useEffect(() => {
 		const fetchConfig = async () => {
 			const config = await loadYaml(
-				`${process.env.PUBLIC_URL}/externalRef.yaml`,
+				'/externalRef.yaml',
 			);
 			setFields(config.fields);
 		};

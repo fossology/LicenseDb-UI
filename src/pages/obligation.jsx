@@ -17,7 +17,7 @@ import CustomColorCell from '../components/CustomColorCell';
 import '../styles/dataTable.css';
 import '../styles/globalSearch.css';
 import SortableColumnHeader from '../components/SortableColumnHeader';
-import { GetTokenSync } from '../contexts/AuthContext';
+import { GetTokenSync } from '../contexts/AuthContext.jsx';
 
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE = 1;

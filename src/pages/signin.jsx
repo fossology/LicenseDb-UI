@@ -11,7 +11,7 @@ import { useMutation } from '@tanstack/react-query';
 import Alert from 'react-bootstrap/Alert';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import AppLogo from '../assets/images/logo.png';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 function Signin() {
 	const navigate = useNavigate();
@@ -63,7 +63,7 @@ function Signin() {
 				<div className="col-2"></div>
 			</div>
 			<div className="row">
-				{process.env.REACT_APP_PROVIDER !== 'oidc' && (
+				{import.meta.env.VITE_PROVIDER !== 'oidc' && (
 					<>
 						<h4>Login</h4>
 						<form onSubmit={handleSubmit}>
@@ -121,7 +121,7 @@ function Signin() {
 						</form>
 					</>
 				)}
-				{process.env.REACT_APP_PROVIDER === 'oidc' && (
+				{import.meta.env.VITE_PROVIDER === 'oidc' && (
 					<div className="w-100 d-flex justify-content-center mt-1">
 						<button
 							className="btn btn-primary"
@@ -132,7 +132,7 @@ function Signin() {
 					</div>
 				)}
 
-				{process.env.REACT_APP_PROVIDER !== 'oidc' &&
+				{import.meta.env.VITE_PROVIDER !== 'oidc' &&
 					mutation.isError && (
 						<Alert variant="danger" className="mt-2" dismissible>
 							{mutation.error.message}

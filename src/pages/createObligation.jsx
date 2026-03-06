@@ -38,7 +38,7 @@ function CreateObligation() {
 	useEffect(() => {
 		const fetchConfig = async () => {
 			const config = await loadYaml(
-				`${process.env.PUBLIC_URL}/externalRef.yaml`,
+				'/externalRef.yaml',
 			);
 			setFields(config.fields);
 		};
@@ -73,7 +73,7 @@ function CreateObligation() {
 		active: true,
 		classification: '',
 		comment: '',
-		shortnames: [],
+		license_ids: [],
 		text: '',
 		text_updatable: true,
 		topic: '',
