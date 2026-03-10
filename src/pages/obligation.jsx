@@ -89,7 +89,7 @@ function Obligation() {
 				textAlign: 'left',
 			},
 			cell: row => (
-				<span className="single-line-preview">{row.text ?? ''}</span>
+				<span className="single-line-preview">{row.text?.substr(0, 100) ?? ''}{(row.text ?? '').length > 100 && '...'}</span>
 			),
 		},
 		{
