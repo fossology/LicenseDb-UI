@@ -40,7 +40,7 @@ function CreateObligation() {
 			const config = await loadYaml(
 				`${import.meta.env.VITE_DOMAIN_SUBDIRECTORY ? `/${import.meta.env.VITE_DOMAIN_SUBDIRECTORY}` : ''}/externalRef.yaml`,
 			);
-			setFields(config.fields);
+			setFields(config.obligation.fields);
 		};
 
 		fetchConfig();
