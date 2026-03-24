@@ -11,7 +11,7 @@ export default defineConfig({
   build: {
     outDir: 'build', // CRA's default build output
   },
-  base: import.meta.VITE_DOMAIN_SUBDIRECTORY ? `/${import.meta.VITE_DOMAIN_SUBDIRECTORY}/` : '',
+  base: '',
   server: {
           allowedHosts: [
                   'localhost',
