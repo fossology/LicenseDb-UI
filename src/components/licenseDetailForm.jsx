@@ -50,7 +50,7 @@ function LicenseDetailForm({
 	useEffect(() => {
 		const fetchConfig = async () => {
 			const config = await loadYaml(
-				'/externalRef.yaml',
+				`${import.meta.env.VITE_DOMAIN_SUBDIRECTORY ? `/${import.meta.env.VITE_DOMAIN_SUBDIRECTORY}` : ''}/externalRef.yaml`,
 			);
 			setFields(config.license.fields);
 		};
