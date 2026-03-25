@@ -19,6 +19,7 @@ import CreateLicense from './pages/createLicense';
 import CreateObligation from './pages/createObligation';
 import CreateUser from './pages/createUser';
 import Operation from './pages/operations';
+import OidcClientManager from './pages/oidcClients';
 import ObligationSettings from './pages/settings/obligationSettings';
 import { AuthProvider } from './contexts/AuthContext';
 import OAuthRedirect from './pages/oAuthRedirect';
@@ -129,6 +130,16 @@ const router = createBrowserRouter(
 						<MainLayout>
 							<ProtectedRoute access={['ADMIN', 'SUPER_ADMIN']}>
 								<ObligationSettings />
+							</ProtectedRoute>
+						</MainLayout>
+					),
+				},
+				{
+					path: 'clients',
+					element: (
+						<MainLayout>
+							<ProtectedRoute access={['ADMIN', 'SUPER_ADMIN']}>
+								<OidcClientManager />
 							</ProtectedRoute>
 						</MainLayout>
 					),

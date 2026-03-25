@@ -31,12 +31,12 @@ const TextDiffModal = ({
 			</Modal.Header>
 
 			<Modal.Body>
-					<ReactDiffViewer
-						oldValue={oldText || ''}
-						newValue={newText || ''}
-						splitView={true}
-						compareMethod={DiffMethod.WORDS}
-					/>
+				<ReactDiffViewer
+					oldValue={oldText || ''}
+					newValue={newText || ''}
+					splitView={true}
+					compareMethod={DiffMethod.WORDS}
+				/>
 			</Modal.Body>
 
 			<Modal.Footer>
