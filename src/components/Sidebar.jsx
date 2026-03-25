@@ -16,6 +16,7 @@ import { Signout, GetTokenSync, GetUser } from '../contexts/AuthContext.jsx';
 import AppLogo from '../assets/images/logo.png';
 import SettingsSubMenu from './settingsSubMenu';
 import '../styles/sideBar.css';
+import { FaUser } from 'react-icons/fa';
 
 export default function LicenseDBSidebar() {
 	const location = useLocation();
@@ -134,6 +135,21 @@ export default function LicenseDBSidebar() {
 									className="mb-1"
 								/>{' '}
 								Operation
+							</Nav.Link>
+						</Nav.Item>
+					)}
+				{isLoggedIn &&
+					['ADMIN', 'SUPER_ADMIN'].indexOf(user.user_level) !==
+						-1 && (
+						<Nav.Item>
+							<Nav.Link
+								to="/clients"
+								eventKey="clients"
+								as={Link}
+								className="ps-2"
+							>
+								<FaUser size={20} className="mb-1" /> Manage
+								Clients
 							</Nav.Link>
 						</Nav.Item>
 					)}

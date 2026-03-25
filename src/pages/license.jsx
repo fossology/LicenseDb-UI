@@ -109,7 +109,10 @@ function License() {
 			maxWidth: '30%',
 			cell: row => (
 				<div className="license-text">
-					<span>{row.text?.substr(0, 50) ?? ''}{(row.text ?? '').length > 50 && '...'}</span>
+					<span>
+						{row.text?.substr(0, 50) ?? ''}
+						{(row.text ?? '').length > 50 && '...'}
+					</span>
 				</div>
 			),
 		},

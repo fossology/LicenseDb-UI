@@ -41,12 +41,12 @@ export function AuthProvider({ children }) {
 
 			const { data } = await axios.post(url, userCredentialsPayload);
 			const { access_token, refresh_token, expires_at } = data.data;
-			
+
 			const expiresAtMs = new Date(expires_at).getTime();
 			localStorage.setItem('licensedb.token', access_token);
 			localStorage.setItem('licensedb.refresh_token', refresh_token);
 			localStorage.setItem('licensedb.expires_at', expiresAtMs);
-			
+
 			const user = await fetchUserProfile(access_token);
 			localStorage.setItem(
 				'licensedb.user',

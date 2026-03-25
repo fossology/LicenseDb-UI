@@ -490,3 +490,50 @@ export const fetchSimilarLicenses = async text => {
 	const response = await axios.post(url, { text }, { headers });
 	return response.data;
 };
+
+export const fetchOidcClients = async () => {
+	const url = `${import.meta.env.VITE_BASE_URL}/oidcClients`;
+
+	const headers = {
+		accept: 'application/json',
+	};
+
+	if (isApiAuthenticated('oidcClients', 'get')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+
+	const response = await axios.get(url, { headers });
+	return response.data;
+};
+
+export const postOidcClient = async data => {
+	const url = `${import.meta.env.VITE_BASE_URL}/oidcClients`;
+
+	const headers = {};
+
+	if (isApiAuthenticated('oidcClients', 'post')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+
+	const response = await axios.post(url, data, { headers });
+	return response.data;
+};
+
+export const deleteOidcClient = async data => {
+	const url = `${import.meta.env.VITE_BASE_URL}/oidcClients`;
+
+	const headers = {};
+
+	if (isApiAuthenticated('oidcClients', 'delete')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+
+	const response = await axios.delete(url, {
+		headers,
+		data,
+	});
+	return response.data;
+};

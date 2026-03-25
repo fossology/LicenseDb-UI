@@ -12,13 +12,15 @@ import { MdOutlineAssignmentTurnedIn } from 'react-icons/md';
 import { PiMathOperationsFill } from 'react-icons/pi';
 import { IoIosLogIn } from 'react-icons/io';
 import { FaUserCircle } from 'react-icons/fa';
-import { GetTokenSync, Signout } from '../contexts/AuthContext.jsx';
+import { GetTokenSync, Signout, GetUser } from '../contexts/AuthContext.jsx';
 import AppLogo from '../assets/images/logo.png';
+import { FaUser } from 'react-icons/fa';
 
 export default function LicenseDBNavbar() {
 	const location = useLocation();
 	const [route, setRoute] = useState('');
 	const isLoggedIn = GetTokenSync() !== null;
+	const user = GetUser();
 	useEffect(() => {
 		setRoute(
 			location.pathname.split('/')?.[1] === ''
@@ -58,17 +60,25 @@ export default function LicenseDBNavbar() {
 								Dashboard
 							</Nav.Link>
 						</Nav.Item>
-						<Nav.Item>
-							<Nav.Link
-								to="/user"
-								eventKey="user"
-								as={Link}
-								className="ps-2"
-							>
-								<BiUserCircle size={20} className="mb-1" />{' '}
-								Users
-							</Nav.Link>
-						</Nav.Item>
+						{isLoggedIn &&
+							['ADMIN', 'SUPER_ADMIN'].indexOf(
+								user.user_level,
+							) !== -1 && (
+								<Nav.Item>
+									<Nav.Link
+										to="/user"
+										eventKey="user"
+										as={Link}
+										className="ps-2"
+									>
+										<BiUserCircle
+											size={20}
+											className="mb-1"
+										/>{' '}
+										Users
+									</Nav.Link>
+								</Nav.Item>
+							)}
 						<Nav.Item>
 							<Nav.Link
 								to="/license"
@@ -93,20 +103,41 @@ export default function LicenseDBNavbar() {
 								Obligation
 							</Nav.Link>
 						</Nav.Item>
-						<Nav.Item>
-							<Nav.Link
-								to="/operation"
-								eventKey="operation"
-								as={Link}
-								className="ps-2"
-							>
-								<PiMathOperationsFill
-									size={20}
-									className="mb-1"
-								/>{' '}
-								Operation
-							</Nav.Link>
-						</Nav.Item>
+						{isLoggedIn &&
+							['ADMIN', 'SUPER_ADMIN'].indexOf(
+								user.user_level,
+							) !== -1 && (
+								<Nav.Item>
+									<Nav.Link
+										to="/operation"
+										eventKey="operation"
+										as={Link}
+										className="ps-2"
+									>
+										<PiMathOperationsFill
+											size={20}
+											className="mb-1"
+										/>{' '}
+										Operation
+									</Nav.Link>
+								</Nav.Item>
+							)}
+						{isLoggedIn &&
+							['ADMIN', 'SUPER_ADMIN'].indexOf(
+								user.user_level,
+							) !== -1 && (
+								<Nav.Item>
+									<Nav.Link
+										to="/clients"
+										eventKey="clients"
+										as={Link}
+										className="ps-2"
+									>
+										<FaUser size={20} className="mb-1" />{' '}
+										Manage Clients
+									</Nav.Link>
+								</Nav.Item>
+							)}
 						<div className="d-flex justify-content-center">
 							{!isLoggedIn ? (
 								<Link to="/signin">
