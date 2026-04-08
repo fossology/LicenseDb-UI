@@ -169,6 +169,14 @@ function ObligationDetailForm({
 		});
 	};
 
+	const handleCheckboxChange = e => {
+		const { name } = e.target;
+		setObligationPayload({
+			...obligationPayload,
+			[name]: !obligationPayload[name],
+		});
+	};
+
 	const handleLicenseChange = associatedLicenses => {
 		setObligationPayload({
 			...obligationPayload,
@@ -414,6 +422,30 @@ function ObligationDetailForm({
 											isSearchable
 										/>
 									</Form.Group>
+								</Row>
+								<Row className='my-3'>
+									<Col>
+										<Form.Group className="form-fields">
+											<Form.Check
+												type="checkbox"
+												label="Text Updatable"
+												name="text_updatable"
+												checked={obligationPayload.text_updatable}
+												onChange={handleCheckboxChange}
+											/>
+										</Form.Group>
+									</Col>
+									<Col>
+										<Form.Group className="form-fields">
+											<Form.Check
+												type="checkbox"
+												label="Active"
+												name="active"
+												checked={obligationPayload.active}
+												onChange={handleCheckboxChange}
+											/>
+										</Form.Group>
+									</Col>
 								</Row>
 								<Row>
 									<Col>
