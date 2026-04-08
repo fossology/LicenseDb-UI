@@ -144,6 +144,7 @@ function CreateLicense() {
 				progress: undefined,
 				theme: 'dark',
 			});
+			navigate('/license');
 		},
 	});
 
@@ -178,7 +179,6 @@ function CreateLicense() {
 		mutation.mutate({
 			licensePayload: licenseData,
 		});
-		navigate('/license');
 	};
 
 	const handleReset = () => {

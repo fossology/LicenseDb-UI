@@ -162,6 +162,7 @@ function CreateObligation() {
 				progress: undefined,
 				theme: 'dark',
 			});
+			navigate('/obligation');
 		},
 	});
 
@@ -170,7 +171,6 @@ function CreateObligation() {
 		mutation.mutate({
 			obligationPayload: obligationData,
 		});
-		navigate('/obligation');
 	};
 
 	const handleReset = () => {
