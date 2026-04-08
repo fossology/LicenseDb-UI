@@ -5,7 +5,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.87.4",
     "axios": "^1.13.5",
-    "bootstrap": "^5.3.7",
+    "bootstrap": "^5.3.8",
     "chart.js": "^4.5.1",
     "chroma-js": "^3.2.0",
     "js-yaml": "^4.1.1",
