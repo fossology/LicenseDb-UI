@@ -372,6 +372,43 @@ export const deleteObligationType = async ({ type }) => {
 	return response.data;
 };
 
+export const fetchObligationCategories = async () => {
+	const url = `${import.meta.env.VITE_BASE_URL}/obligations/categories`;
+	const headers = {};
+	if (isApiAuthenticated('obligations/categories', 'get')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+	const response = await axios.get(url, { headers });
+	return response.data;
+};
+
+export const postObligationCategory = async ({ payload }) => {
+	const url = `${import.meta.env.VITE_BASE_URL}/obligations/categories`;
+	const headers = {};
+	if (isApiAuthenticated('obligations/categories', 'post')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+	const response = await axios.post(url, payload, {
+		headers,
+	});
+	return response.data;
+};
+
+export const deleteObligationCategory = async ({ category }) => {
+	const url = `${import.meta.env.VITE_BASE_URL}/obligations/categories/${encodeURIComponent(category)}`;
+	const headers = {};
+	if (isApiAuthenticated('obligations/categories/{category}', 'delete')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+	const response = await axios.delete(url, {
+		headers,
+	});
+	return response.data;
+};
+
 export const fetchObligationClassfications = async () => {
 	const url = `${import.meta.env.VITE_BASE_URL}/obligations/classifications`;
 	const headers = {};

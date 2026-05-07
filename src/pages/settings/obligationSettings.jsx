@@ -22,11 +22,16 @@ import {
 	fetchObligationClassfications,
 	postObligationClassification,
 	deleteObligationClassification,
+	postObligationCategory,
+	fetchObligationCategories,
+	deleteObligationCategory
 } from '../../api/api';
 
 function ObligationSettings() {
 	const [newType, setNewType] = useState('');
 	const [typeIndex, setTypeIndex] = useState(null);
+	const [newCategory, setNewCategory] = useState('');
+	const [categoryIndex, setCategoryIndex] = useState(null);
 	const [classIndex, setClassIndex] = useState(null);
 	const [color, setColor] = useState('#fff');
 	const [colorName, setColorName] = useState('');
@@ -101,6 +106,77 @@ function ObligationSettings() {
 				theme: 'dark',
 			});
 			queryClient.invalidateQueries(['obligationTypes']);
+			queryClient.invalidateQueries('audits');
+		},
+	});
+
+	// obligation category queries and mutations
+	const { data: obligationCategoriesData } = useQuery({
+		queryKey: ['obligationCategory'],
+		queryFn: () => fetchObligationCategories(),
+		placeholderData: keepPreviousData,
+	});
+
+	const createCategory = useMutation({
+		mutationFn: postObligationCategory,
+		onError: error => {
+			toast.error(
+				`Obligation category creation failed: ${error.response.data.error}`,
+				{
+					position: 'top-right',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+					theme: 'dark',
+				},
+			);
+		},
+		onSuccess: () => {
+			toast.success('Obligation category created successfully!', {
+				position: 'top-right',
+				autoClose: 3000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: 'dark',
+			});
+			queryClient.invalidateQueries(['obligationCategory']);
+			queryClient.invalidateQueries('audits');
+		},
+	});
+
+	const deleteCategory = useMutation({
+		mutationFn: deleteObligationCategory,
+		onError: error => {
+			toast.error(
+				`Obligation category deletion failed: ${error.response.data.error}`,
+				{
+					position: 'top-right',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+					theme: 'dark',
+				},
+			);
+		},
+		onSuccess: () => {
+			toast.success('Obligation category deleted successfully!', {
+				position: 'top-right',
+				autoClose: 3000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: 'dark',
+			});
+			queryClient.invalidateQueries(['obligationCategory']);
 			queryClient.invalidateQueries('audits');
 		},
 	});
@@ -209,8 +285,8 @@ function ObligationSettings() {
 						</Button>
 					</Col>
 					<Col>
-						<div className="">
-							<h6>Obligation types list</h6>
+						<h6>Obligation types list</h6>
+						<div className="ms-4">
 							{obligationTypesData?.data?.map((option, index) => (
 								<li
 									key={index}
@@ -227,6 +303,66 @@ function ObligationSettings() {
 											type="button"
 											onClick={() =>
 												deleteType.mutate(option)
+											}
+											className="btn-close pt-0 pb-0"
+											aria-label="Close"
+										/>
+									)}
+								</li>
+							))}
+						</div>
+					</Col>
+				</Row>
+			</Form>
+			<Form
+				className="create-form-parent mb-2"
+				onSubmit={e => {
+					e.preventDefault();
+					createCategory.mutate({ payload: { category: newCategory } });
+					setNewCategory('');
+				}}
+			>
+				<Row>
+					<Col style={{ borderRight: '1px dashed gray' }}>
+						<Form.Group className="form-fields">
+							<Form.Label>Add new obligation Category</Form.Label>
+							<Form.Control
+								type="text"
+								name="category"
+								value={newCategory}
+								onChange={e =>
+									setNewCategory(e.target.value.toUpperCase())
+								}
+								placeholder="Enter category name"
+							/>
+						</Form.Group>
+						<Button
+							type="submit"
+							variant="primary"
+							disabled={createCategory.isPending}
+						>
+							Add Category
+						</Button>
+					</Col>
+					<Col>
+						<h6>Obligation categories list</h6>
+						<div className='ms-4'>
+							{obligationCategoriesData?.data?.map((option, index) => (
+								<li
+									key={index}
+									onMouseEnter={() => setCategoryIndex(index)}
+									onMouseLeave={() => setCategoryIndex(null)}
+								>
+									{option.category}
+									{categoryIndex === index && (
+										<CloseButton
+											style={{
+												marginLeft: '0.8rem',
+												marginTop: '0',
+											}}
+											type="button"
+											onClick={() =>
+												deleteCategory.mutate(option)
 											}
 											className="btn-close pt-0 pb-0"
 											aria-label="Close"
