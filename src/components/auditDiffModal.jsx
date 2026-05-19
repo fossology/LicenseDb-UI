@@ -32,11 +32,14 @@ const DiffModal = ({ show, handleClose, audit }) => {
 						<span>Topic: {single_audit.entity?.topic}</span>
 					)}
 					{audit?.auditType.toLowerCase() ===
-						'obligationclassification' && (
+						'classification' && (
 						<span>{single_audit.entity?.classification}</span>
 					)}
-					{audit?.auditType.toLowerCase() === 'obligationtype' && (
+					{audit?.auditType.toLowerCase() === 'type' && (
 						<span>{single_audit.entity?.type}</span>
+					)}
+					{audit?.auditType.toLowerCase() === 'category' && (
+						<span>&nbsp;{single_audit.entity?.category}</span>
 					)}
 				</Modal.Title>
 			</Modal.Header>
