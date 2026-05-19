@@ -161,6 +161,9 @@ function Log() {
 							{log.type.toLowerCase() === 'type' && (
 								<span>&nbsp;{log.entity?.type}</span>
 							)}
+							{log.type.toLowerCase() === 'category' && (
+								<span>&nbsp;{log.entity?.category}</span>
+							)}
 						</p>
 					</div>
 					<p>

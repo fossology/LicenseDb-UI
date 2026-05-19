@@ -150,7 +150,7 @@ function Obligation() {
 						<DataTable
 							fixedHeader
 							columns={columns}
-							data={data.data}
+							data={data.data ?? []}
 							progressPending={isPreviousData}
 							pagination
 							paginationServer
