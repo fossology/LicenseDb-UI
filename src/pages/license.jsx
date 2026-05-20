@@ -6,18 +6,109 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import '../styles/license.css';
 import DataTable from 'react-data-table-component';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, keepPreviousData, useQueryClient, useMutation } from '@tanstack/react-query';
 import LicenseDetailForm from '../components/licenseDetailForm';
-import { fetchLicenses } from '../api/api';
+import { fetchLicenses, updateLicense } from '../api/api';
 import CustomColorCell from '../components/CustomColorCell';
 import '../styles/dataTable.css';
 import '../styles/globalSearch.css';
 import SortableColumnHeader from '../components/SortableColumnHeader';
 import { GetTokenSync } from '../contexts/AuthContext.jsx';
 import GlobalSearch from '../components/globalSearch';
+import { MdOutlineDelete } from "react-icons/md";
+import PropTypes from 'prop-types';
+import { Modal } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE = 1;
+
+function DeletionModal({ licenseToBeDeleted, setLicenseToBeDeleted }) {
+	const queryClient = useQueryClient();
+	const mutation = useMutation({
+		mutationFn: updateLicense,
+		onError: error => {
+			toast.error(
+				`License deletion failed: ${error.response.data.error}`,
+				{
+					position: 'top-right',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+					theme: 'dark',
+				},
+			);
+		},
+		onSuccess: data => {
+			toast.success('License deleted successfully!', {
+				position: 'top-right',
+				autoClose: 3000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: 'dark',
+			});
+			queryClient.invalidateQueries('licenses');
+			queryClient.invalidateQueries('audits');
+		},
+	});
+
+	return (
+		<>
+			<Modal
+				size="lg"
+				show={licenseToBeDeleted !== null}
+				onHide={() => setLicenseToBeDeleted(null)}
+			>
+				<Modal.Header
+					style={{ backgroundColor: '#feefef', color: '#c7283e' }}
+					closeButton
+				>
+					<Modal.Title className="fw-bold">
+						Delete License
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body className="fs-5">
+					<div className="fw-bold">
+						This operation deletes the license. Please use
+						with caution.
+					</div>
+				</Modal.Body>
+				<Modal.Footer>
+					<button
+						className="btn btn-secondary"
+						onClick={() => setLicenseToBeDeleted(null)}
+					>
+						Close
+					</button>
+					<button
+						className="btn btn-danger"
+						onClick={() => {
+							mutation.mutate({
+								licensePayload: { ...licenseToBeDeleted, active: false },
+								id: licenseToBeDeleted.id,
+							})
+						}}
+						disabled={mutation.isPending}
+					>
+						Delete
+					</button>
+				</Modal.Footer>
+			</Modal>
+		</>
+	);
+}
+
+DeletionModal.propTypes = {
+	licenseToBeDeleted: PropTypes.shape({
+		id: PropTypes.string.isRequired,
+	}),
+	setLicenseToBeDeleted: PropTypes.func.isRequired,
+};
 
 function License() {
 	const riskToColorMapping = new Map([
@@ -39,6 +130,7 @@ function License() {
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const filterRef = useRef(null);
 	const [refresh, setRefresh] = useState(false);
+	const [deletionLicense, setDeletionLicense] = useState(null);
 
 	const { isPending, isError, error, data, isPreviousData } = useQuery({
 		queryKey: ['licenses', page, perPage, sortField, sortOrder],
@@ -128,6 +220,26 @@ function License() {
 				/>
 			),
 		},
+		{
+			name: 'Actions',
+			maxWidth: '5%',
+			cell: row => (
+				<MdOutlineDelete
+					className="btn-icon"
+					size={20}
+					onClick={() => {
+						if (
+							licensePayload &&
+							row.id === licensePayload.id
+						) {
+							setLicensePayload(null);
+						}
+						setDeletionLicense(row);
+					}}
+				/>
+			),
+		},
+
 	];
 
 	const handleRowsChange = newPerPage => {
@@ -167,6 +279,10 @@ function License() {
 
 	return (
 		<div className="content">
+			<DeletionModal
+				licenseToBeDeleted={deletionLicense}
+				setLicenseToBeDeleted={setDeletionLicense}
+			/>
 			{isPending ? (
 				<div
 					className="d-flex position-relative"

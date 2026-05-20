@@ -26,29 +26,6 @@ import { toast } from 'react-toastify';
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE = 1;
 
-const TableHeader = () => {
-	return (
-		<div className="table-header my-2">
-			<Link to="/obligation/create">
-				<Button variant="primary">
-					<GoPlusCircle className="me-1 mb-1" />
-					Create Obligation
-				</Button>
-			</Link>
-			<div className="search-container">
-				<div className="search-icon">
-					<FcSearch />
-				</div>
-				<input
-					type="text"
-					placeholder="Search"
-					className="search-input"
-				/>
-			</div>
-		</div>
-	);
-};
-
 function DeletionModal({ obligationToBeDeleted, setObligationToBeDeleted }) {
 	const queryClient = useQueryClient();
 	const mutation = useMutation({
@@ -100,21 +77,9 @@ function DeletionModal({ obligationToBeDeleted, setObligationToBeDeleted }) {
 				</Modal.Header>
 				<Modal.Body className="fs-5">
 					<div className="fw-bold">
-						This operation hard deletes the obligation. Please use
+						This operation deletes the obligation. Please use
 						with caution.
 					</div>
-					{obligationToBeDeleted &&
-						obligationToBeDeleted.license_ids.length > 0 && (
-							<div
-								className="alert alert-danger fw-medium mt-3"
-								role="alert"
-							>
-								Obligation cannot be deleted: Found{' '}
-								{obligationToBeDeleted.license_ids.length}{' '}
-								associated licenses. Please disassociate them
-								first.
-							</div>
-						)}
 				</Modal.Body>
 				<Modal.Footer>
 					<button
@@ -126,17 +91,16 @@ function DeletionModal({ obligationToBeDeleted, setObligationToBeDeleted }) {
 					<button
 						className="btn btn-danger"
 						onClick={() => {
-							console.log(obligationToBeDeleted)
 							mutation.mutate({
 								obligationPayload: { ...obligationToBeDeleted, active: false },
 								id: obligationToBeDeleted.id,
 							})
 						}}
-						disabled={mutation.isPending || (obligationToBeDeleted?.license_ids.length > 0)}
+						disabled={mutation.isPending}
 					>
 						Delete
 					</button>
-				</Modal.Footer>``
+				</Modal.Footer>
 			</Modal>
 		</>
 	);
@@ -144,8 +108,7 @@ function DeletionModal({ obligationToBeDeleted, setObligationToBeDeleted }) {
 
 DeletionModal.propTypes = {
 	obligationToBeDeleted: PropTypes.shape({
-		topic: PropTypes.string.isRequired,
-		shortnames: PropTypes.arrayOf(PropTypes.string).isRequired,
+		id: PropTypes.string.isRequired,
 	}),
 	setObligationToBeDeleted: PropTypes.func.isRequired,
 };
@@ -222,7 +185,6 @@ function Obligation() {
 							row.id === obligationPayload.id
 						) {
 							setObligationPayload(null);
-							return;
 						}
 						setDeletionObligation(row);
 					}}
