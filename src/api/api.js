@@ -574,3 +574,18 @@ export const deleteOidcClient = async data => {
 	});
 	return response.data;
 };
+
+export const resetDatabase = async () => {
+	const url = `${import.meta.env.VITE_BASE_URL}/hard-reset`;
+	const headers = {};
+	if (isApiAuthenticated('hard-reset', 'delete')) {
+		const token = await GetToken();
+		headers['Authorization'] = `Bearer ${token}`;
+	}
+	const response = await axios.delete(url, {
+		headers,
+	});
+
+	return response.data;
+};
+
