@@ -6,22 +6,94 @@ import React, { useState } from 'react';
 import '../styles/operation.css';
 import { AiOutlineImport, AiOutlineExport } from 'react-icons/ai';
 import { PiUploadSimpleBold } from 'react-icons/pi';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Form, Row, Col, Spinner, Button, Modal } from 'react-bootstrap';
 import '../styles/createFormView.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import Spinner from 'react-bootstrap/Spinner';
-import Button from 'react-bootstrap/Button';
 import {
 	exportLicenses,
 	exportObligations,
 	uploadLicenseFile,
 	uploadObligationFile,
+	resetDatabase
 } from '../api/api';
 import AlertDismissible from '../components/AlertToggle';
 import { importOptions } from '../utils/data/dropdownOptions';
+import PropTypes from 'prop-types';
+
+function DeletionModal({ show, setShow }) {
+	const resetDB = useMutation({
+		mutationFn: resetDatabase,
+		onError: error => {
+			toast.error(
+				`Failed to reset database: ${error.response.data.message}`,
+				{
+					position: 'top-right',
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+					theme: 'dark',
+				},
+			);
+		},
+		onSuccess: data => {
+			toast.success('Reset database successfully!', {
+				position: 'top-right',
+				autoClose: 3000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: 'dark',
+			});
+		},
+	});
+
+	return (
+		<>
+			<Modal size="lg" show={show} onHide={() => setShow(false)}>
+				<Modal.Header
+					style={{ backgroundColor: '#feefef', color: '#c7283e' }}
+					closeButton
+				>
+					<Modal.Title className="fw-bold">
+						Reset Database
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body className="fs-5 fw-bold ">
+					This operation hard deletes all the licenses, obligations
+					and changelogs. Please use with caution. It resets the list of possible
+					obligation categories, types and classifications to the default values.
+				</Modal.Body>
+				<Modal.Footer>
+					<button
+						className="btn btn-secondary"
+						onClick={() => setShow(false)}
+					>
+						Close
+					</button>
+					<button
+						className="btn btn-danger"
+						onClick={() => resetDB.mutate()}
+						disabled={resetDB.isPending}
+					>
+						Reset
+					</button>
+				</Modal.Footer>
+			</Modal>
+		</>
+	);
+}
+
+DeletionModal.propTypes = {
+	show: PropTypes.bool.isRequired,
+	setShow: PropTypes.func.isRequired,
+};
 
 function Operation() {
 	const [selectedLink, setSelectedLink] = useState(null);
@@ -29,8 +101,10 @@ function Operation() {
 	const [file, setFile] = useState(null);
 	const [showAlert, setShowAlert] = useState(false);
 	const [alertData, setAlertData] = useState('');
+	const [openDeletionModal, setOpenDeletionModal] = useState(false);
 
 	const queryClient = useQueryClient();
+
 
 	const { mutate: importLicenseMutation, isPending: isLicensePending } =
 		useMutation({
@@ -367,6 +441,20 @@ function Operation() {
 					</div>
 				</div>
 			</>
+
+			<h5 className="header-title">Database Administration</h5>
+			<DeletionModal
+				show={openDeletionModal}
+				setShow={setOpenDeletionModal}
+			/>
+			<div className='text-center'>
+				<button
+					className="btn btn-outline-danger"
+					onClick={() => setOpenDeletionModal(true)}
+				>
+					Reset Database
+				</button>
+			</div>
 		</div>
 	);
 }
