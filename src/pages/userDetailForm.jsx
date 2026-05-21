@@ -135,7 +135,7 @@ function UserDetailForm({ userPayload, setUserPayload, page, perPage }) {
 				<div className="w-100 d-flex justify-content-center">
 					<button
 						type="button"
-						className="btn btn-primary"
+						className="btn btn-success"
 						disabled={updateUserMutation.isPending}
 						onClick={e => {
 							updateUserMutation.mutate({
@@ -151,6 +151,13 @@ function UserDetailForm({ userPayload, setUserPayload, page, perPage }) {
 							></span>
 						)}
 						Update User
+					</button>
+					<button
+						type="submit"
+						className="btn btn-danger ms-2"
+						onClick={() => setUserPayload(null)}
+					>
+						Close
 					</button>
 				</div>
 			</Form>

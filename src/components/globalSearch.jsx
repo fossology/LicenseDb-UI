@@ -31,7 +31,6 @@ function GlobalSearch({ response, refresh }) {
 	};
 
 	useEffect(() => {
-		console.log('Refresh in GlobalSearch:', refresh);
 		handleSearch();
 	}, [refresh])
 

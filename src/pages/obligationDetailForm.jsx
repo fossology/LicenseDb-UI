@@ -495,7 +495,7 @@ function ObligationDetailForm({
 				<div className="w-100 d-flex justify-content-center">
 					<button
 						type="submit"
-						className="btn btn-primary"
+						className="btn btn-success"
 						disabled={mutation.isPending}
 					>
 						{mutation.isPending && (
@@ -505,6 +505,13 @@ function ObligationDetailForm({
 							></span>
 						)}
 						Update Obligation
+					</button>
+					<button
+						type="submit"
+						className="btn btn-danger ms-2"
+						onClick={() => setObligationPayload(null)}
+					>
+						Close
 					</button>
 				</div>
 			</Form>

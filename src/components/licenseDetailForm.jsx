@@ -533,7 +533,7 @@ function LicenseDetailForm({
 				<div className="w-100 d-flex justify-content-center">
 					<button
 						type="button"
-						className="btn btn-primary"
+						className="btn btn-success"
 						disabled={updateLicenseMutation.isPending}
 						onClick={e => {
 							updateLicenseMutation.mutate({
@@ -549,6 +549,13 @@ function LicenseDetailForm({
 							></span>
 						)}
 						Update License
+					</button>
+					<button
+						type="submit"
+						className="btn btn-danger ms-2"
+						onClick={() => setLicensePayload(null)}
+					>
+						Close
 					</button>
 				</div>
 			</Form>
