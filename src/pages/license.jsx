@@ -38,8 +38,9 @@ function License() {
 	const [paginationData, setPaginationData] = useState();
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const filterRef = useRef(null);
+	const [refresh, setRefresh] = useState(false);
 
-	const { isPending, isError, error, data, isPreviousData } = useQuery({
+	const { isPending, isError, error, data, isPreviousData, refetch } = useQuery({
 		queryKey: ['licenses', page, perPage, sortField, sortOrder],
 		queryFn: () =>
 			fetchLicenses({ page, limit: perPage, sortField, sortOrder }),
@@ -55,6 +56,11 @@ function License() {
 			setPaginationData(data.paginationmeta.resource_count);
 		}
 	}, [data, isSearchActive]);
+
+	useEffect(() => {
+		if (!isSearchActive)
+			refetch();
+	}, [refresh])
 
 	const handleColumnClick = (sortField, sortOrder) => {
 		setSortField(sortField);
@@ -159,10 +165,9 @@ function License() {
 		}
 	}, []);
 
-	// Reset to default mode when clearing search
 	const resetToDefault = () => {
 		setIsSearchActive(false);
-		setPage(1); // Reset page to the first one
+		setPage(1);
 	};
 
 	return (
@@ -212,7 +217,7 @@ function License() {
 							subHeaderComponent={
 								<GlobalSearch
 									response={handleHeaderData}
-									reset={resetToDefault}
+									refresh={refresh}
 								/>
 							}
 						/>
@@ -225,6 +230,7 @@ function License() {
 							perPage={perPage}
 							sortField={sortField}
 							sortOrder={sortOrder}
+							setRefresh={setRefresh}
 						/>
 					)}
 				</div>
