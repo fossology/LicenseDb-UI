@@ -45,7 +45,6 @@ function ObligationDetailForm({
 	page,
 	perPage,
 	sortOrder,
-	setRefresh
 }) {
 	const queryClient = useQueryClient();
 	const [similarObligations, setSimilarObligations] = useState([]);
@@ -150,7 +149,7 @@ function ObligationDetailForm({
 				theme: 'dark',
 			});
 
-			setRefresh(prev => !prev);
+			queryClient.invalidateQueries('obligations')
 			queryClient.invalidateQueries('audits');
 		},
 	});
@@ -535,7 +534,6 @@ ObligationDetailForm.propTypes = {
 	page: PropTypes.number.isRequired,
 	perPage: PropTypes.number.isRequired,
 	sortOrder: PropTypes.string.isRequired,
-	setRefresh: PropTypes.func.isRequired,
 };
 
 export default ObligationDetailForm;
