@@ -40,7 +40,7 @@ function License() {
 	const filterRef = useRef(null);
 	const [refresh, setRefresh] = useState(false);
 
-	const { isPending, isError, error, data, isPreviousData, refetch } = useQuery({
+	const { isPending, isError, error, data, isPreviousData } = useQuery({
 		queryKey: ['licenses', page, perPage, sortField, sortOrder],
 		queryFn: () =>
 			fetchLicenses({ page, limit: perPage, sortField, sortOrder }),
@@ -56,11 +56,6 @@ function License() {
 			setPaginationData(data.paginationmeta.resource_count);
 		}
 	}, [data, isSearchActive]);
-
-	useEffect(() => {
-		if (!isSearchActive)
-			refetch();
-	}, [refresh])
 
 	const handleColumnClick = (sortField, sortOrder) => {
 		setSortField(sortField);

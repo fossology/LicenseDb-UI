@@ -41,7 +41,7 @@ function LicenseDetailForm({
 	perPage,
 	sortField,
 	sortOrder,
-	setRefresh,
+	setRefresh
 }) {
 	const [showModal, setShowModal] = useState(false);
 	const queryClient = useQueryClient();
@@ -132,7 +132,8 @@ function LicenseDetailForm({
 					progress: undefined,
 					theme: 'dark',
 				});
-				setRefresh(prev  => !prev);
+				queryClient.invalidateQueries('licenses');
+				setRefresh(prev => !prev);
 				queryClient.invalidateQueries('audits');
 			}
 		},

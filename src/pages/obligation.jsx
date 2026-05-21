@@ -28,9 +28,8 @@ function Obligation() {
 	const [obligationPayload, setObligationPayload] = useState(null);
 	const [sortOrder, setSortOrder] = useState('asc');
 	const isLoggedIn = GetTokenSync() !== null;
-	const [refresh, setRefresh] = useState(false);
 
-	const { isPending, isError, error, data, isPreviousData, refetch } = useQuery({
+	const { isPending, isError, error, data, isPreviousData } = useQuery({
 		queryKey: ['obligations', page, perPage, sortOrder],
 		queryFn: () => fetchObligations({ page, limit: perPage, sortOrder }),
 		placeholderData: keepPreviousData,
@@ -39,10 +38,6 @@ function Obligation() {
 	const handleColumnClick = sortOrder => {
 		setSortOrder(sortOrder);
 	};
-
-	useEffect(() => {
-		refetch();
-	}, [refresh]);
 
 	const columns = [
 		{
@@ -165,7 +160,6 @@ function Obligation() {
 							page={page}
 							perPage={perPage}
 							sortOrder={sortOrder}
-							setRefresh={setRefresh}
 						/>
 					)}
 				</div>
