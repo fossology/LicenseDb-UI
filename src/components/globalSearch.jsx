@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: © 2024 Siemens AG
 // SPDX-FileContributor: Sourav Bhowmik <sourav.bhowmik@siemens.com>
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ImSearch } from 'react-icons/im';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -12,7 +12,7 @@ import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import { searchLicenseByShortname } from '../api/api';
 
-function GlobalSearch({ response }) {
+function GlobalSearch({ response, refresh }) {
 	const [query, setQuery] = useState('');
 
 	const handleSearch = () => {
@@ -29,6 +29,11 @@ function GlobalSearch({ response }) {
 
 		mutation.mutate({ queryPayload: licenseData }); // Trigger search function with the entered query
 	};
+
+	useEffect(() => {
+		console.log('Refresh in GlobalSearch:', refresh);
+		handleSearch();
+	}, [refresh])
 
 	const handleKeyPress = e => {
 		if (e.key === 'Enter') {
@@ -50,7 +55,7 @@ function GlobalSearch({ response }) {
 			});
 		},
 		onSuccess: data => {
-			response(data);
+			response({ ...data, data: (data.data ?? []).filter(l => l.active === true)}); // Pass search results to parent component
 		},
 	});
 
@@ -83,6 +88,7 @@ function GlobalSearch({ response }) {
 
 GlobalSearch.propTypes = {
 	response: PropTypes.func.isRequired,
+	refresh: PropTypes.bool.isRequired,
 };
 
 export default GlobalSearch;

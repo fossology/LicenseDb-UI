@@ -3,7 +3,7 @@
 // SPDX-FileContributor: Sourav Bhowmik <sourav.bhowmik@siemens.com>
 // SPDX-FileContributor: Dearsh Oberoi <dearsh.oberoi@siemens.com>
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import '../styles/obligation.css';
 import { FcSearch } from 'react-icons/fc';
@@ -22,37 +22,15 @@ import { GetTokenSync } from '../contexts/AuthContext.jsx';
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE = 1;
 
-const TableHeader = () => {
-	return (
-		<div className="table-header my-2">
-			<Link to="/obligation/create">
-				<Button variant="primary">
-					<GoPlusCircle className="me-1 mb-1" />
-					Create Obligation
-				</Button>
-			</Link>
-			<div className="search-container">
-				<div className="search-icon">
-					<FcSearch />
-				</div>
-				<input
-					type="text"
-					placeholder="Search"
-					className="search-input"
-				/>
-			</div>
-		</div>
-	);
-};
-
 function Obligation() {
 	const [page, setPage] = useState(DEFAULT_PAGE);
 	const [perPage, setPerPage] = useState(DEFAULT_PER_PAGE);
 	const [obligationPayload, setObligationPayload] = useState(null);
 	const [sortOrder, setSortOrder] = useState('asc');
 	const isLoggedIn = GetTokenSync() !== null;
+	const [refresh, setRefresh] = useState(false);
 
-	const { isPending, isError, error, data, isPreviousData } = useQuery({
+	const { isPending, isError, error, data, isPreviousData, refetch } = useQuery({
 		queryKey: ['obligations', page, perPage, sortOrder],
 		queryFn: () => fetchObligations({ page, limit: perPage, sortOrder }),
 		placeholderData: keepPreviousData,
@@ -61,6 +39,10 @@ function Obligation() {
 	const handleColumnClick = sortOrder => {
 		setSortOrder(sortOrder);
 	};
+
+	useEffect(() => {
+		refetch();
+	}, [refresh]);
 
 	const columns = [
 		{
@@ -164,7 +146,16 @@ function Obligation() {
 							subHeader={isLoggedIn}
 							onRowClicked={handleRowClicked}
 							onChangePage={handlePageChange}
-							subHeaderComponent={<TableHeader />}
+							subHeaderComponent={
+								<div className="table-header my-2">
+									<Link to="/obligation/create">
+										<Button variant="primary">
+											<GoPlusCircle className="me-1 mb-1" />
+											Create Obligation
+										</Button>
+									</Link>
+								</div>
+							}
 						/>
 					</div>
 					{obligationPayload && isLoggedIn && (
@@ -174,6 +165,7 @@ function Obligation() {
 							page={page}
 							perPage={perPage}
 							sortOrder={sortOrder}
+							setRefresh={setRefresh}
 						/>
 					)}
 				</div>

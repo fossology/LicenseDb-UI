@@ -14,7 +14,7 @@ export const fetchLicenses = async ({
 	sortField,
 	sortOrder,
 }) => {
-	const base_url = `${import.meta.env.VITE_BASE_URL}/licenses?page=${page}&limit=${limit}&sort_by=${sortField}&order_by=${sortOrder}`;
+	const base_url = `${import.meta.env.VITE_BASE_URL}/licenses?active=true&page=${page}&limit=${limit}&sort_by=${sortField}&order_by=${sortOrder}`;
 	const paramString = Object.entries(params)
 		.map(
 			([key, value]) =>

@@ -45,6 +45,7 @@ function ObligationDetailForm({
 	page,
 	perPage,
 	sortOrder,
+	setRefresh
 }) {
 	const queryClient = useQueryClient();
 	const [similarObligations, setSimilarObligations] = useState([]);
@@ -92,14 +93,21 @@ function ObligationDetailForm({
 	}));
 	useEffect(() => {
 		if (!obligationPayload || !licenseData) return;
-		const defaultLicenses =
-			obligationPayload.license_ids.map(id => {
-				const lic = licenseData.licenses.filter(l => l.id === id);
-				return {
-					value: lic[0].id,
-					label: `${lic[0].shortname} (Id:${lic[0].id})`,
-				};
-			}) || [];
+		const licenseById = new Map(
+			(licenseData.licenses ?? []).map(lic => [lic.id, lic]),
+		);
+		const defaultLicenses = (obligationPayload.license_ids ?? []).flatMap(
+			id => {
+				const lic = licenseById.get(id);
+				if (!lic) return [];
+				return [
+					{
+						value: lic.id,
+						label: `${lic.shortname} (Id:${lic.id})`,
+					},
+				];
+			},
+		);
 		setSelectedLicenses(defaultLicenses);
 	}, [obligationPayload, licenseData]);
 
@@ -142,22 +150,7 @@ function ObligationDetailForm({
 				theme: 'dark',
 			});
 
-			queryClient.setQueryData(
-				['obligations', page, perPage, sortOrder],
-				oldData => {
-					const newData = {
-						...oldData,
-						data: oldData?.data.map(ob => {
-							if (ob.id === data.data[0].id) {
-								return data.data[0];
-							} else {
-								return ob;
-							}
-						}),
-					};
-					return newData;
-				},
-			);
+			setRefresh(prev => !prev);
 			queryClient.invalidateQueries('audits');
 		},
 	});
@@ -180,7 +173,7 @@ function ObligationDetailForm({
 	const handleLicenseChange = associatedLicenses => {
 		setObligationPayload({
 			...obligationPayload,
-			license_ids: associatedLicenses?.map(x => x.value),
+			license_ids: [ ...associatedLicenses?.map(x => x.value), ...obligationPayload.license_ids.filter(id => !licenseData.licenses.map(l => l.id).includes(id))],
 		});
 	};
 
@@ -535,6 +528,7 @@ ObligationDetailForm.propTypes = {
 	page: PropTypes.number.isRequired,
 	perPage: PropTypes.number.isRequired,
 	sortOrder: PropTypes.string.isRequired,
+	setRefresh: PropTypes.func.isRequired,
 };
 
 export default ObligationDetailForm;

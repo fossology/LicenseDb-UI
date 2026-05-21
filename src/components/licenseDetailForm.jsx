@@ -41,6 +41,7 @@ function LicenseDetailForm({
 	perPage,
 	sortField,
 	sortOrder,
+	setRefresh,
 }) {
 	const [showModal, setShowModal] = useState(false);
 	const queryClient = useQueryClient();
@@ -131,22 +132,7 @@ function LicenseDetailForm({
 					progress: undefined,
 					theme: 'dark',
 				});
-				queryClient.setQueryData(
-					['licenses', page, perPage, sortField, sortOrder],
-					oldData => {
-						const newData = {
-							...oldData,
-							data: oldData.data.map(lic => {
-								if (lic.id === data.data[0].id) {
-									return data.data[0];
-								} else {
-									return lic;
-								}
-							}),
-						};
-						return newData;
-					},
-				);
+				setRefresh(prev  => !prev);
 				queryClient.invalidateQueries('audits');
 			}
 		},
@@ -479,29 +465,24 @@ function LicenseDetailForm({
 											value: d.id,
 											label: `${d.type}: ${d.topic} (Id: ${d.id})`,
 										}))}
-										defaultValue={(
+										value={(
 											licensePayload?.obligation_ids ?? []
-										).map(id => {
-											const obl_index = (
-												allObligationData?.data ?? []
-											).findIndex(ob => ob.id === id);
-											if (obl_index === -1) return null;
-											const elem =
-												allObligationData.data[
-													obl_index
-												];
+										).filter(id => (allObligationData?.data ?? []).map(o => o.id).includes(id)).map(id => {
+											const obl = allObligationData.data.filter(ob => ob.id === id);
 											return {
-												value: elem.id,
-												label: `${elem.type}: ${elem.topic} (Id: ${elem.id})`,
+												value: obl[0].id,
+												label: `${obl[0].type}: ${obl[0].topic} (Id: ${obl[0].id})`,
 											};
 										})}
 										onChange={selectedObligations => {
 											setLicensePayload({
 												...licensePayload,
-												obligation_ids:
-													selectedObligations.map(
+												obligation_ids: [
+													...selectedObligations.map(
 														ob => ob.value,
 													),
+													...licensePayload.obligation_ids.filter(id => !(allObligationData?.data ?? []).map(l => l.id).includes(id))
+												]
 											});
 										}}
 										isSearchable
@@ -595,6 +576,7 @@ LicenseDetailForm.propTypes = {
 	perPage: PropTypes.number.isRequired,
 	sortField: PropTypes.string.isRequired,
 	sortOrder: PropTypes.string.isRequired,
+	setRefresh: PropTypes.func.isRequired,
 };
 
 export default LicenseDetailForm;
