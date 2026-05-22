@@ -79,6 +79,7 @@ function CreateObligation() {
 		topic: '',
 		type: '',
 		category: 'GENERAL',
+		external_ref: {},
 	};
 
 	const [obligationData, setObligationData] = useState(initialObligationData);
