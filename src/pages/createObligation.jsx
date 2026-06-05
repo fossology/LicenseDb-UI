@@ -11,7 +11,6 @@ import { useQuery, keepPreviousData, useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import CustomSelect from '../components/customStyleSelect';
-import { categoryOptions } from '../utils/data/dropdownOptions';
 import SimilarityResultList from '../components/SimilarityResultList';
 import { resolveComponentPath } from '../utils/componentPathMap';
 import { loadYaml } from '../utils/loadYaml';
@@ -22,6 +21,7 @@ import {
 	fetchObligationClassfications,
 	fetchLicensePreviews,
 	fetchSimilarObligations,
+	fetchObligationCategories
 } from '../api/api';
 
 function CreateObligation() {
@@ -69,6 +69,16 @@ function CreateObligation() {
 		color: item.color,
 	}));
 
+	const { data: obligationCategoriesData } = useQuery({
+		queryKey: ['obligationCategory'],
+		queryFn: () => fetchObligationCategories(),
+		placeholderData: keepPreviousData,
+	});
+	const categoryOptions = (obligationCategoriesData?.data ?? []).map(item => ({
+		value: item.category,
+		label: item.category,
+	}));
+
 	const initialObligationData = {
 		active: true,
 		classification: '',
@@ -78,7 +88,7 @@ function CreateObligation() {
 		text_updatable: true,
 		topic: '',
 		type: '',
-		category: 'GENERAL',
+		category: '',
 		external_ref: {},
 	};
 

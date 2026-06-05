@@ -27,13 +27,13 @@ import CustomSelect from '../components/customStyleSelect';
 import ToolTipLabel from '../components/tooltip/tooltipLabel';
 import ToolTipLegend from '../components/tooltip/tooltipLegend';
 import { tooltipObligation } from '../components/tooltip/tooltips';
-import { categoryOptions } from '../utils/data/dropdownOptions';
 import {
 	updateObligation,
 	fetchLicensePreviews,
 	fetchObligationTypes,
 	fetchObligationClassfications,
 	fetchSimilarObligations,
+	fetchObligationCategories
 } from '../api/api';
 import SimilarityResultList from '../components/SimilarityResultList';
 import { loadYaml } from '../utils/loadYaml';
@@ -119,6 +119,16 @@ function ObligationDetailForm({
 		value: item.classification,
 		label: item.classification,
 		color: item.color,
+	}));
+
+	const { data: obligationCategoriesData } = useQuery({
+		queryKey: ['obligationCategory'],
+		queryFn: () => fetchObligationCategories(),
+		placeholderData: keepPreviousData,
+	});
+	const categoryOptions = (obligationCategoriesData?.data ?? []).map(item => ({
+		value: item.category,
+		label: item.category,
 	}));
 
 	const mutation = useMutation({
