@@ -25,12 +25,3 @@ export const importOptions = [
 	{ value: 'json', label: 'JSON' },
 	{ value: 'csv', label: 'CSV', isDisabled: true },
 ];
-
-export const categoryOptions = [
-	{ value: 'GENERAL', label: 'GENERAL' },
-	{ value: 'DISTRIBUTION', label: 'DISTRIBUTION' },
-	{ value: 'PATENT', label: 'PATENT' },
-	{ value: 'INTERNAL', label: 'INTERNAL' },
-	{ value: 'CONTRACTUAL', label: 'CONTRACTUAL' },
-	{ value: 'EXPORT_CONTROL', label: 'EXPORT CONTROL' },
-];
