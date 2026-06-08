@@ -20,7 +20,7 @@
     "react-router-dom": "^7.17.0",
     "react-select": "^5.10.2",
     "react-spinners": "^0.17.0",
-    "react-toastify": "^11.0.5",
+    "react-toastify": "^11.1.0",
     "styled-components": "^6.4.2"
   },
   "scripts": {
