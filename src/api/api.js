@@ -13,6 +13,7 @@ export const fetchLicenses = async ({
 	params = {},
 	sortField,
 	sortOrder,
+	search,
 }) => {
 	const base_url = `${import.meta.env.VITE_BASE_URL}/licenses?active=true&page=${page}&limit=${limit}&sort_by=${sortField}&order_by=${sortOrder}`;
 	const paramString = Object.entries(params)
@@ -21,7 +22,8 @@ export const fetchLicenses = async ({
 				`${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
 		)
 		.join('&');
-	const url = `${base_url}&${paramString}`;
+	const searchString = search ? `&search=${encodeURIComponent(search)}` : '';
+	const url = `${base_url}&${paramString}${searchString}`;
 	const headers = {};
 	if (isApiAuthenticated('licenses', 'get')) {
 		const token = await GetToken();
@@ -51,6 +53,7 @@ export const fetchObligations = async ({
 	limit = 10,
 	params = { active: true },
 	sortOrder,
+	search,
 }) => {
 	const base_url = `${import.meta.env.VITE_BASE_URL}/obligations?page=${page}&limit=${limit}&order_by=${sortOrder}`;
 	const paramString = Object.entries(params)
@@ -59,7 +62,8 @@ export const fetchObligations = async ({
 				`${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
 		)
 		.join('&');
-	const url = `${base_url}&${paramString}`;
+	const searchString = search ? `&search=${encodeURIComponent(search)}` : '';
+	const url = `${base_url}&${paramString}${searchString}`;
 	const headers = {};
 	if (isApiAuthenticated('obligations', 'get')) {
 		const token = await GetToken();
@@ -465,19 +469,6 @@ export const fetchUserProfile = async token => {
 		headers['Authorization'] = `Bearer ${token}`;
 	}
 	const response = await axios.get(url, {
-		headers,
-	});
-	return response.data;
-};
-
-export const searchLicenseByShortname = async ({ queryPayload }) => {
-	const url = `${import.meta.env.VITE_BASE_URL}/search`;
-	const headers = {};
-	if (isApiAuthenticated('search', 'post')) {
-		const token = await GetToken();
-		headers['Authorization'] = `Bearer ${token}`;
-	}
-	const response = await axios.post(url, queryPayload, {
 		headers,
 	});
 	return response.data;
