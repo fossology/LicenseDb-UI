@@ -113,9 +113,8 @@ function User() {
 							onChangeRowsPerPage={handleRowsChange}
 							onRowClicked={handleRowClicked}
 							onChangePage={handlePageChange}
-							subHeader
 							paginationServer
-							subHeaderComponent={
+							subHeader={
 								<div className="table-header my-2">
 									<Link to="/user/create">
 										<Button

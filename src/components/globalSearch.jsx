@@ -4,35 +4,27 @@
 
 import React, { useEffect, useState } from 'react';
 import { ImSearch } from 'react-icons/im';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { GoPlusCircle } from 'react-icons/go';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
-import { searchLicenseByShortname } from '../api/api';
 
-function GlobalSearch({ response, refresh }) {
+function GlobalSearch({
+	onSearch,
+	refresh = false,
+	createLink = '/license/create',
+	createLabel = 'Create License',
+	placeholder = 'Search licenses...',
+}) {
 	const [query, setQuery] = useState('');
 
 	const handleSearch = () => {
-		if (query.trim() === '') {
-			response(null); // Notify the parent to reset the table to default
-			return;
-		}
-
-		const licenseData = {
-			field: 'shortname',
-			search: 'fuzzy',
-			search_term: query,
-		};
-
-		mutation.mutate({ queryPayload: licenseData }); // Trigger search function with the entered query
+		onSearch(query.trim());
 	};
 
 	useEffect(() => {
 		handleSearch();
-	}, [refresh])
+	}, [refresh]);
 
 	const handleKeyPress = e => {
 		if (e.key === 'Enter') {
@@ -40,30 +32,12 @@ function GlobalSearch({ response, refresh }) {
 		}
 	};
 
-	const mutation = useMutation({
-		mutationFn: searchLicenseByShortname,
-		onError: error => {
-			toast.error(`Search failed: ${error.response.data.error}`, {
-				position: 'top-right',
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: 'dark',
-			});
-		},
-		onSuccess: data => {
-			response({ ...data, data: (data.data ?? []).filter(l => l.active === true)}); // Pass search results to parent component
-		},
-	});
-
 	return (
 		<div className="table-header my-2">
-			<Link to="/license/create">
+			<Link to={createLink}>
 				<Button variant="primary">
 					<GoPlusCircle className="me-1 mb-1" />
-					Create License
+					{createLabel}
 				</Button>
 			</Link>
 			<div className="search-container">
@@ -73,7 +47,7 @@ function GlobalSearch({ response, refresh }) {
 				<div className="search-input-wrapper">
 					<input
 						type="text"
-						placeholder="Enter short name"
+						placeholder={placeholder}
 						className="search-input"
 						value={query}
 						onChange={e => setQuery(e.target.value)}
@@ -86,8 +60,11 @@ function GlobalSearch({ response, refresh }) {
 }
 
 GlobalSearch.propTypes = {
-	response: PropTypes.func.isRequired,
-	refresh: PropTypes.bool.isRequired,
+	onSearch: PropTypes.func.isRequired,
+	refresh: PropTypes.bool,
+	createLink: PropTypes.string,
+	createLabel: PropTypes.string,
+	placeholder: PropTypes.string,
 };
 
 export default GlobalSearch;
