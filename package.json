@@ -8,7 +8,7 @@
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.1",
     "chroma-js": "^3.2.0",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.2",
     "react": "19.2.5",
     "react-bootstrap": "^2.10.10",
     "react-chartjs-2": "^5.3.1",
