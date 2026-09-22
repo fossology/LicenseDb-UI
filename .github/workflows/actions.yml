@@ -16,7 +16,7 @@ jobs:
     name: Setup & Cache Node
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -37,7 +37,7 @@ jobs:
     needs: setup-node
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: |
           npm ci --prefer-offline
           npm run lint
@@ -47,7 +47,7 @@ jobs:
     needs: setup-node
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: |
           npm ci --prefer-offline
           npm run prettier
@@ -57,7 +57,7 @@ jobs:
     needs: setup-node
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: |
           npm ci --prefer-offline
           npm run build
@@ -66,7 +66,7 @@ jobs:
     name: REUSE Compliance
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: REUSE Compliance Check
         uses: fsfe/reuse-action@v5
 
