@@ -3,14 +3,10 @@
 // SPDX-FileContributor: Sourav Bhowmik <sourav.bhowmik@siemens.com>
 // SPDX-FileContributor: Dearsh Oberoi <dearsh.oberoi@siemens.com>
 
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import '../styles/obligation.css';
-import { FcSearch } from 'react-icons/fc';
-import { Link } from 'react-router-dom';
-import { GoPlusCircle } from 'react-icons/go';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import Button from 'react-bootstrap/Button';
 import { fetchObligations } from '../api/api';
 import ObligationDetailForm from './obligationDetailForm';
 import CustomColorCell from '../components/CustomColorCell';
@@ -18,6 +14,7 @@ import '../styles/dataTable.css';
 import '../styles/globalSearch.css';
 import SortableColumnHeader from '../components/SortableColumnHeader';
 import { GetTokenSync } from '../contexts/AuthContext.jsx';
+import GlobalSearch from '../components/globalSearch';
 
 const DEFAULT_PER_PAGE = 10;
 const DEFAULT_PAGE = 1;
@@ -27,11 +24,18 @@ function Obligation() {
 	const [perPage, setPerPage] = useState(DEFAULT_PER_PAGE);
 	const [obligationPayload, setObligationPayload] = useState(null);
 	const [sortOrder, setSortOrder] = useState('asc');
+	const [searchTerm, setSearchTerm] = useState('');
 	const isLoggedIn = GetTokenSync() !== null;
 
 	const { isPending, isError, error, data, isPreviousData } = useQuery({
-		queryKey: ['obligations', page, perPage, sortOrder],
-		queryFn: () => fetchObligations({ page, limit: perPage, sortOrder }),
+		queryKey: ['obligations', page, perPage, sortOrder, searchTerm],
+		queryFn: () =>
+			fetchObligations({
+				page,
+				limit: perPage,
+				sortOrder,
+				search: searchTerm,
+			}),
 		placeholderData: keepPreviousData,
 	});
 
@@ -96,6 +100,11 @@ function Obligation() {
 		}
 	};
 
+	const handleSearch = useCallback(term => {
+		setSearchTerm(term);
+		setPage(1); // Reset to the first page for the new search
+	}, []);
+
 	return (
 		<div className="content">
 			{isPending ? (
@@ -138,18 +147,17 @@ function Obligation() {
 							highlightOnHover
 							pointerOnHover
 							onChangeRowsPerPage={handleRowsChange}
-							subHeader={isLoggedIn}
 							onRowClicked={handleRowClicked}
 							onChangePage={handlePageChange}
-							subHeaderComponent={
-								<div className="table-header my-2">
-									<Link to="/obligation/create">
-										<Button variant="primary">
-											<GoPlusCircle className="me-1 mb-1" />
-											Create Obligation
-										</Button>
-									</Link>
-								</div>
+							subHeader={
+								isLoggedIn && (
+									<GlobalSearch
+										onSearch={handleSearch}
+										createLink="/obligation/create"
+										createLabel="Create Obligation"
+										placeholder="Search obligations..."
+									/>
+								)
 							}
 						/>
 					</div>
