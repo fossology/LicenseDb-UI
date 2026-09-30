@@ -3,7 +3,7 @@
 // SPDX-FileContributor: Sourav Bhowmik <sourav.bhowmik@siemens.com>
 // SPDX-FileContributor: Dearsh Oberoi <dearsh.oberoi@siemens.com>
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import '../styles/license.css';
 import DataTable from 'react-data-table-component';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
@@ -36,26 +36,29 @@ function License() {
 	const isLoggedIn = GetTokenSync() !== null;
 	const [tableData, setTableData] = useState([]);
 	const [paginationData, setPaginationData] = useState();
-	const [isSearchActive, setIsSearchActive] = useState(false);
-	const filterRef = useRef(null);
+	const [searchTerm, setSearchTerm] = useState('');
 	const [refresh, setRefresh] = useState(false);
 
 	const { isPending, isError, error, data, isPreviousData } = useQuery({
-		queryKey: ['licenses', page, perPage, sortField, sortOrder],
+		queryKey: ['licenses', page, perPage, sortField, sortOrder, searchTerm],
 		queryFn: () =>
-			fetchLicenses({ page, limit: perPage, sortField, sortOrder }),
-		enabled: !isSearchActive,
+			fetchLicenses({
+				page,
+				limit: perPage,
+				sortField,
+				sortOrder,
+				search: searchTerm,
+			}),
 		placeholderData: keepPreviousData,
 	});
 
 	// Update table data when query data changes
 	useEffect(() => {
-		if (!isSearchActive && data?.data) {
-			filterRef.current = data.data;
+		if (data?.data) {
 			setTableData(data.data);
 			setPaginationData(data.paginationmeta.resource_count);
 		}
-	}, [data, isSearchActive]);
+	}, [data]);
 
 	const handleColumnClick = (sortField, sortOrder) => {
 		setSortField(sortField);
@@ -132,9 +135,7 @@ function License() {
 
 	const handleRowsChange = newPerPage => {
 		setPerPage(newPerPage);
-		if (!isSearchActive) {
-			setPage(1); // Reset to the first page
-		}
+		setPage(1); // Reset to the first page
 	};
 
 	const handleRowClicked = row => {
@@ -149,21 +150,10 @@ function License() {
 		setPage(page);
 	};
 
-	const handleHeaderData = useCallback(searchData => {
-		if (searchData?.data) {
-			setIsSearchActive(true);
-			filterRef.current = searchData.data;
-			setTableData(searchData.data);
-			setPaginationData(searchData.paginationmeta.resource_count);
-		} else {
-			resetToDefault();
-		}
+	const handleSearch = useCallback(term => {
+		setSearchTerm(term);
+		setPage(1); 
 	}, []);
-
-	const resetToDefault = () => {
-		setIsSearchActive(false);
-		setPage(1);
-	};
 
 	return (
 		<div className="content">
@@ -200,20 +190,21 @@ function License() {
 							data={tableData}
 							progressPending={isPreviousData}
 							pagination
-							paginationServer={!isSearchActive}
+							paginationServer
 							paginationTotalRows={paginationData}
 							striped
 							highlightOnHover
 							pointerOnHover
 							onChangeRowsPerPage={handleRowsChange}
-							subHeader={isLoggedIn}
 							onRowClicked={handleRowClicked}
 							onChangePage={handlePageChange}
-							subHeaderComponent={
-								<GlobalSearch
-									response={handleHeaderData}
-									refresh={refresh}
-								/>
+							subHeader={
+								isLoggedIn && (
+									<GlobalSearch
+										onSearch={handleSearch}
+										refresh={refresh}
+									/>
+								)
 							}
 						/>
 					</div>
