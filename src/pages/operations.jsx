@@ -66,9 +66,8 @@ function DeletionModal({ show, setShow }) {
 					</Modal.Title>
 				</Modal.Header>
 				<Modal.Body className="fs-5 fw-bold ">
-					This operation hard deletes all the licenses, obligations
-					and changelogs. Please use with caution. It resets the list of possible
-					obligation categories, types and classifications to the default values.
+					This operation deletes all the licenses and obligations.
+					Please use with caution.
 				</Modal.Body>
 				<Modal.Footer>
 					<button
