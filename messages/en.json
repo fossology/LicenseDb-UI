@@ -1,0 +1,44 @@
+{
+  "Metadata": {
+    "title": "LicenseDB",
+    "description": "License management"
+  },
+  "Home": {
+    "heading": "To get started, edit app/[locale]/page.tsx.",
+    "intro": "Looking for a starting point or more instructions? Head over to",
+    "templates": "Templates",
+    "or": "or the",
+    "learning": "Learning",
+    "ending": "center.",
+    "deploy": "Deploy Now",
+    "documentation": "Documentation"
+  },
+  "Sidebar": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "license": "License",
+    "obligation": "Obligation",
+    "manageClients": "Manage Clients",
+    "collapseSidebar": "Collapse Sidebar",
+    "expandSidebar": "Expand Sidebar",
+    "admin": "Admin",
+    "profileLabel": "{name}, {role}",
+    "openSidebar": "Open sidebar"
+  },
+  "Controls": {
+    "language": "Language",
+    "signIn": "Sign in",
+    "oauthSignIn": "Sign in with {provider}",
+    "username": "Username",
+    "password": "Password",
+    "signingIn": "Signing in...",
+    "cancel": "Cancel",
+    "invalidCredentials": "Incorrect username or password.",
+    "signOut": "Sign out",
+    "loading": "Loading session...",
+    "unavailable": "Sign-in is not configured",
+    "account": "Signed in as {name}",
+    "unknownUser": "User",
+    "error": "Unable to start authentication. Please try again."
+  }
+}

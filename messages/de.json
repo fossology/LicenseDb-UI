@@ -1,0 +1,44 @@
+{
+  "Metadata": {
+    "title": "LicenseDB",
+    "description": "Lizenzverwaltung"
+  },
+  "Home": {
+    "heading": "Bearbeiten Sie zum Einstieg app/[locale]/page.tsx.",
+    "intro": "Sie suchen einen Ausgangspunkt oder weitere Anleitungen? Besuchen Sie",
+    "templates": "Vorlagen",
+    "or": "oder das",
+    "learning": "Lernzentrum",
+    "ending": ".",
+    "deploy": "Jetzt bereitstellen",
+    "documentation": "Dokumentation"
+  },
+  "Sidebar": {
+    "dashboard": "Armaturenbrett",
+    "users": "Benutzer",
+    "license": "Lizenz",
+    "obligation": "Verpflichtung",
+    "manageClients": "Kunden verwalten",
+    "collapseSidebar": "Seitenleiste einklappen",
+    "expandSidebar": "Erweitern Sie die Seitenleiste",
+    "admin": "Admin",
+    "profileLabel": "{name}, {role}",
+    "openSidebar": "Seitenleiste öffnen"
+  },
+  "Controls": {
+    "language": "Sprache",
+    "signIn": "Anmelden",
+    "oauthSignIn": "Mit {provider} anmelden",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "signingIn": "Anmeldung laeuft...",
+    "cancel": "Abbrechen",
+    "invalidCredentials": "Benutzername oder Passwort ist falsch.",
+    "signOut": "Abmelden",
+    "loading": "Sitzung wird geladen...",
+    "unavailable": "Anmeldung ist nicht konfiguriert",
+    "account": "Angemeldet als {name}",
+    "unknownUser": "Benutzer",
+    "error": "Anmeldung konnte nicht gestartet werden. Bitte erneut versuchen."
+  }
+}
