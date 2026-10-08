@@ -12,7 +12,7 @@ export function getAuthOptions(): NextAuthOptions {
   const config = getAuthConfiguration();
   const providerKey = config.mode === "credentials"
     ? process.env.LICENSEDB_API_URL
-    : [process.env.OAUTH_CLIENT_ID, process.env.OAUTH_WELL_KNOWN_URL ?? process.env.OAUTH_AUTHORIZATION_URL].join("|");
+    : [process.env.OAUTH_CLIENT_ID, process.env.OAUTH_WELL_KNOWN_URL].join("|");
 
   return {
     secret: process.env.NEXTAUTH_SECRET,

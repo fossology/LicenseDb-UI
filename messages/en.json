@@ -25,6 +25,18 @@
     "profileLabel": "{name}, {role}",
     "openSidebar": "Open sidebar"
   },
+  "Login": {
+    "title": "Sign in to LicenseDb",
+    "description": "Access your license management workspace.",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in",
+    "signingIn": "Signing in...",
+    "oauthSignIn": "Continue with {provider}",
+    "invalidCredentials": "The username or password is incorrect.",
+    "error": "Unable to sign in right now. Please try again.",
+    "unavailable": "Sign-in is not configured. Contact your administrator."
+  },
   "Controls": {
     "language": "Language",
     "signIn": "Sign in",

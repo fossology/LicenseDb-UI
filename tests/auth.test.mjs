@@ -13,11 +13,12 @@ test("credentials mode uses backend configuration, not OAuth secrets", () => {
   assert.equal(config.configured, true);
 });
 
-test("OAuth supports discovery or complete explicit endpoints", () => {
+test("OAuth requires discovery and rejects explicit-endpoint-only configuration", () => {
   const env = { ...common, AUTH_MODE: "oauth", OAUTH_CLIENT_ID: "test-client", OAUTH_CLIENT_SECRET: "test-client-secret" };
   assert.equal(getAuthConfiguration(env).configured, false);
   assert.equal(getAuthConfiguration({ ...env, OAUTH_WELL_KNOWN_URL: "https://identity.example.com/discovery" }).configured, true);
-  assert.equal(getAuthConfiguration({ ...env, OAUTH_AUTHORIZATION_URL: "https://identity.example.com/authorize", OAUTH_TOKEN_URL: "https://identity.example.com/token", OAUTH_USERINFO_URL: "https://identity.example.com/userinfo" }).configured, true);
+  assert.equal(getAuthConfiguration({ ...env, OAUTH_AUTHORIZATION_URL: "https://identity.example.com/authorize", OAUTH_TOKEN_URL: "https://identity.example.com/token", OAUTH_USERINFO_URL: "https://identity.example.com/userinfo" }).configured, false);
+  assert.equal(getAuthConfiguration({ ...env, OAUTH_WELL_KNOWN_URL: "http://identity.example.com/discovery" }).configured, false);
 });
 
 test("invalid modes, missing secrets and insecure production URLs fail closed", () => {
@@ -31,6 +32,10 @@ test("invalid modes, missing secrets and insecure production URLs fail closed", 
 test("generic OAuth maps stable identities and enables protocol checks", () => {
   const provider = createOAuthProvider({ OAUTH_WELL_KNOWN_URL: "https://identity.example.com/discovery" });
   assert.equal(provider.id, "oauth");
+  assert.equal(provider.wellKnown, "https://identity.example.com/discovery");
+  assert.deepEqual(provider.authorization, { params: { scope: "openid profile email" } });
+  assert.equal(provider.token, undefined);
+  assert.equal(provider.userinfo, undefined);
   assert.equal(provider.idToken, true);
   assert.deepEqual(provider.checks, ["pkce", "state", "nonce"]);
   assert.equal(provider.profile({ sub: "user-123", name: "Example" }).id, "user-123");
