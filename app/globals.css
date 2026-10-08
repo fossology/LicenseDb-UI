@@ -143,9 +143,14 @@
   font-family: var(--font-geist-sans);
 }
 
-.licensedb-sidebar [data-slot="sidebar-wrapper"] {
+.licensedb-sidebar[data-slot="sidebar-wrapper"] {
   --sidebar-width: 17.25rem;
   --sidebar-width-icon: 4.75rem;
+}
+
+.licensedb-sidebar [data-collapsible="icon"] [data-slot="sidebar-menu-button"],
+.licensedb-sidebar [data-collapsible="icon"] summary {
+  margin-inline: auto;
 }
 
 [data-slot="sidebar-wrapper"] {
