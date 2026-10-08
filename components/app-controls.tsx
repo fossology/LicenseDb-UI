@@ -2,11 +2,11 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useLocale, useTranslations } from "next-intl";
-import { useState, type FormEvent } from "react";
+import { useTranslations } from "next-intl";
+import { useState, SubmitEvent } from "react";
 import { LogIn, LogOut, X } from "lucide-react";
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
+import { useRouter } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import type { AuthMode } from "@/lib/auth-configuration";
 
 export function AppControls({ authConfigured, authMode, providerName, variant = "header" }: {
@@ -15,9 +15,7 @@ export function AppControls({ authConfigured, authMode, providerName, variant = 
   providerName: string;
   variant?: "header" | "sidebar";
 }) {
-  const locale = useLocale();
   const t = useTranslations("Controls");
-  const pathname = usePathname();
   const router = useRouter();
   const { data: session, status } = useSession();
   const queryClient = useQueryClient();
@@ -36,7 +34,8 @@ export function AppControls({ authConfigured, authMode, providerName, variant = 
       const callbackUrl = window.location.href;
       queryClient.clear();
       if (authenticated) {
-        await signOut({ callbackUrl });
+        await signOut({ callbackUrl, redirect: false });
+        router.refresh();
       } else if (authMode === "credentials") {
         setFormOpen(true);
       } else {
@@ -49,7 +48,7 @@ export function AppControls({ authConfigured, authMode, providerName, variant = 
     }
   }
 
-  async function submitCredentials(event: FormEvent<HTMLFormElement>) {
+  async function submitCredentials(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const values = new FormData(form);
@@ -85,30 +84,7 @@ export function AppControls({ authConfigured, authMode, providerName, variant = 
     <header className={sidebar
       ? "flex w-full flex-col items-stretch gap-3 border-0 p-0 text-xs"
       : "flex w-full flex-wrap items-center justify-between gap-4 border-b border-zinc-200 p-4 text-sm dark:border-zinc-800"}>
-      <label className={sidebar ? "flex items-center justify-between gap-2" : "flex items-center gap-2"}>
-        {t("language")}
-        <select
-          value={locale}
-          className={sidebar
-            ? "rounded border border-[#69436f] bg-[#1a0b1e] px-2 py-1.5 text-[#f3e9f4]"
-            : "rounded border border-zinc-300 bg-background p-2 dark:border-zinc-700"}
-          onChange={(event) => {
-            const nextLocale = event.target.value;
-            if (nextLocale === "en" || nextLocale === "de") {
-              router.replace(
-                `${pathname}${window.location.search}${window.location.hash}`,
-                { locale: nextLocale },
-              );
-            }
-          }}
-        >
-          {routing.locales.map((language) => (
-            <option key={language} value={language}>
-              {language === "en" ? "English" : "Deutsch"}
-            </option>
-          ))}
-        </select>
-      </label>
+      <LanguageSwitcher variant={sidebar ? "sidebar" : "default"} />
       <div className={sidebar ? "flex flex-col items-stretch gap-2" : "flex flex-wrap items-center gap-3"}>
         {authenticated && !sidebar && (
           <span>

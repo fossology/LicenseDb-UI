@@ -44,9 +44,6 @@ export async function loginWithCredentials(
 ) {
   const username = credentials?.username?.trim() ?? "";
   const password = credentials?.password ?? "";
-  if (!username || username.length > 254 || !password || password.length > 4096) {
-    return null;
-  }
 
   try {
     const login = await backendRequest(endpoint(baseUrl, "login"), {
@@ -57,7 +54,6 @@ export async function loginWithCredentials(
     if (login.status === 401) return null;
     if (!login.ok) throw new Error("AuthenticationUnavailable");
     const tokens = parseTokens(await login.json());
-
     const profile = await backendRequest(endpoint(baseUrl, "users/profile"), {
       headers: { Authorization: `Bearer ${tokens.accessToken}`, Accept: "application/json" },
     });

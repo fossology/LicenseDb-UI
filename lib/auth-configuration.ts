@@ -28,16 +28,12 @@ export function getAuthConfiguration(env: AuthEnvironment = process.env) {
   const commonConfigured = Boolean(
     env.NEXTAUTH_SECRET && isAllowedUrl(env.NEXTAUTH_URL, production),
   );
-  const oauthEndpointsConfigured = env.OAUTH_WELL_KNOWN_URL
-    ? isAllowedUrl(env.OAUTH_WELL_KNOWN_URL, production)
-    : [env.OAUTH_AUTHORIZATION_URL, env.OAUTH_TOKEN_URL, env.OAUTH_USERINFO_URL]
-        .every((url) => isAllowedUrl(url, production));
   const providerConfigured =
     mode === "credentials"
       ? isAllowedUrl(env.LICENSEDB_API_URL, production)
       : mode === "oauth" &&
         Boolean(env.OAUTH_CLIENT_ID && env.OAUTH_CLIENT_SECRET) &&
-        oauthEndpointsConfigured;
+        isAllowedUrl(env.OAUTH_WELL_KNOWN_URL, production);
 
   return {
     mode,
@@ -49,8 +45,7 @@ export function getAuthConfiguration(env: AuthEnvironment = process.env) {
 export function createOAuthProvider(
   env: AuthEnvironment = process.env,
 ): OAuthConfig<Record<string, unknown>> {
-  const discovery = Boolean(env.OAUTH_WELL_KNOWN_URL);
-  const scope = env.OAUTH_SCOPE ?? (discovery ? "openid profile email" : "");
+  const scope = env.OAUTH_SCOPE ?? "openid profile email";
 
   return {
     id: "oauth",
@@ -58,15 +53,12 @@ export function createOAuthProvider(
     type: "oauth",
     clientId: env.OAUTH_CLIENT_ID,
     clientSecret: env.OAUTH_CLIENT_SECRET,
-    wellKnown: discovery ? env.OAUTH_WELL_KNOWN_URL : undefined,
+    wellKnown: env.OAUTH_WELL_KNOWN_URL,
     authorization: {
-      url: discovery ? undefined : env.OAUTH_AUTHORIZATION_URL,
       params: scope ? { scope } : {},
     },
-    token: discovery ? undefined : env.OAUTH_TOKEN_URL,
-    userinfo: discovery ? undefined : env.OAUTH_USERINFO_URL,
-    idToken: discovery,
-    checks: discovery ? ["pkce", "state", "nonce"] : ["pkce", "state"],
+    idToken: true,
+    checks: ["pkce", "state", "nonce"],
     profile(profile) {
       const id = env.OAUTH_PROFILE_ID_CLAIM
         ? profile[env.OAUTH_PROFILE_ID_CLAIM]

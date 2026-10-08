@@ -73,15 +73,16 @@ refresh-token rotation policy or shared server-side session storage if required.
 ### OAuth Mode
 
 Configure `OAUTH_CLIENT_ID`, `OAUTH_CLIENT_SECRET`, and optionally `OAUTH_NAME`.
-Use `OAUTH_WELL_KNOWN_URL` for a standards-compliant OIDC discovery document, or
-set all three explicit endpoints: `OAUTH_AUTHORIZATION_URL`, `OAUTH_TOKEN_URL`,
-and `OAUTH_USERINFO_URL`. Set `OAUTH_SCOPE` to the provider's required scopes.
-Discovery mode uses ID-token validation; explicit OAuth uses the userinfo response.
-Both require PKCE and state; OIDC also requires nonce. Providers must support these
-protocol checks. Nonstandard provider protocols require a dedicated adapter.
+`OAUTH_WELL_KNOWN_URL` is the only endpoint setting and is required. It must point
+to a standards-compliant OIDC discovery document; authorization, token, and userinfo
+endpoints are discovered automatically. Explicit endpoint settings are not supported.
+`OAUTH_SCOPE` defaults to `openid profile email`; any override must include `openid`.
+OAuth mode uses ID-token validation and requires PKCE, state, and nonce. Providers
+must support these protocol checks. Nonstandard provider protocols require a
+dedicated adapter.
 
 Register the callback URL `http://localhost:3000/api/auth/callback/oauth` locally,
-or `https://YOUR_ORIGIN/api/auth/callback/oauth` in production. Userinfo must supply
+or `https://YOUR_ORIGIN/api/auth/callback/oauth` in production. ID-token claims must supply
 a stable `sub` or `id`; `OAUTH_PROFILE_ID_CLAIM` can select another top-level claim.
 Optional `name`, `email`, and `picture` are mapped into the session.
 

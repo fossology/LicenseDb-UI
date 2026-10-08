@@ -1,15 +1,18 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { Session } from "next-auth";
 import { SessionContext, SessionProvider } from "next-auth/react";
 import { useState, type ReactNode } from "react";
 
 export function Providers({
   children,
   authConfigured,
+  session,
 }: {
   children: ReactNode;
   authConfigured: boolean;
+  session: Session | null;
 }) {
   const [queryClient] = useState(
     () =>
@@ -25,8 +28,8 @@ export function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      {authConfigured ? (
-        <SessionProvider>{children}</SessionProvider>
+      {authConfigured && session ? (
+        <SessionProvider session={session}>{children}</SessionProvider>
       ) : (
         <SessionContext.Provider
           value={{

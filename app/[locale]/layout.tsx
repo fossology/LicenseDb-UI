@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { getServerSession } from "next-auth";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { Providers } from "@/app/providers";
 import { routing } from "@/i18n/routing";
-import { isAuthConfigured } from "@/lib/auth";
+import { getAuthOptions, isAuthConfigured } from "@/lib/auth";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -38,9 +39,12 @@ export async function generateMetadata({
 async function RuntimeProviders({ children }: { children: React.ReactNode }) {
   await connection();
   const authConfigured = isAuthConfigured();
+  const session = authConfigured
+    ? await getServerSession(getAuthOptions())
+    : null;
 
   return (
-    <Providers authConfigured={authConfigured}>
+    <Providers authConfigured={authConfigured} session={session}>
       {children}
     </Providers>
   );

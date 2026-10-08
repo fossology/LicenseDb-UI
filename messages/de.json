@@ -25,6 +25,18 @@
     "profileLabel": "{name}, {role}",
     "openSidebar": "Seitenleiste öffnen"
   },
+  "Login": {
+    "title": "Bei LicenseDb anmelden",
+    "description": "Öffnen Sie Ihren Lizenzverwaltungsbereich.",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "signingIn": "Anmeldung läuft...",
+    "oauthSignIn": "Weiter mit {provider}",
+    "invalidCredentials": "Benutzername oder Passwort ist falsch.",
+    "error": "Anmeldung derzeit nicht möglich. Bitte versuchen Sie es erneut.",
+    "unavailable": "Die Anmeldung ist nicht konfiguriert. Wenden Sie sich an den Administrator."
+  },
   "Controls": {
     "language": "Sprache",
     "signIn": "Anmelden",
