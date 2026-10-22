@@ -1,19 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import {
   ChevronDown,
-  ChevronRight,
-  FileCheck2,
+  Cog,
   Lightbulb,
-  LayoutDashboard,
   PanelLeftClose,
   PanelLeftOpen,
-  ScrollText,
-  UserRound,
-  UsersRound,
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,6 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppControls } from "@/components/app-controls";
+import { MainNavigation } from "@/components/main-navigation";
 import type { AuthMode } from "@/lib/auth-configuration";
 
 function CollapseControl({
@@ -77,11 +72,10 @@ export function AppSidebar({
         <Sidebar collapsible="icon" className="border-[#48234e]">
           <SidebarHeader className="gap-4 px-4 pt-6 pb-4">
             <div className="flex h-10 items-center gap-2.5 overflow-hidden px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-              <Lightbulb
-                aria-hidden="true"
-                className="size-5 shrink-0 text-[#ff334f]"
-                strokeWidth={2.5}
-              />
+              <span aria-hidden="true" className="relative flex size-6 shrink-0 items-end justify-start text-[#ff334f]">
+                <Lightbulb className="size-5" strokeWidth={2.8} />
+                <Cog className="absolute top-0 right-0 size-2.5 fill-[#1a0b1e]" strokeWidth={3} />
+              </span>
               <span className="truncate text-[25px] leading-none font-semibold text-white group-data-[collapsible=icon]:hidden">
                 LicenseDb
               </span>
@@ -90,61 +84,7 @@ export function AppSidebar({
           </SidebarHeader>
 
           <SidebarContent className="px-3">
-            <SidebarMenu className="gap-1">
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={<Link href="/" aria-current="page" />}
-                  isActive
-                  tooltip={t("dashboard")}
-                  className="h-10 text-[#f1e6f3] data-active:bg-[#35163a] data-active:text-white"
-                >
-                  <LayoutDashboard />
-                  <span>{t("dashboard")}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  tooltip={t("users")}
-                  className="h-10 text-[#e8d8ec] hover:bg-[#35183b] hover:text-white"
-                >
-                  <UserRound />
-                  <span>{t("users")}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  tooltip={t("license")}
-                  className="h-10 text-[#e8d8ec] hover:bg-[#35183b] hover:text-white"
-                >
-                  <ScrollText />
-                  <span>{t("license")}</span>
-                  <ChevronRight className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  tooltip={t("obligation")}
-                  className="h-10 text-[#e8d8ec] hover:bg-[#35183b] hover:text-white"
-                >
-                  <FileCheck2 />
-                  <span>{t("obligation")}</span>
-                  <ChevronRight className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  tooltip={t("manageClients")}
-                  className="h-10 text-[#e8d8ec] hover:bg-[#35183b] hover:text-white"
-                >
-                  <UsersRound />
-                  <span>{t("manageClients")}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+            <MainNavigation />
           </SidebarContent>
 
           <SidebarFooter className="gap-3 px-4 pb-4">
