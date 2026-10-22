@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -60,10 +61,12 @@ export function AppSidebar({
   authConfigured,
   authMode,
   providerName,
+  children,
 }: {
   authConfigured: boolean;
   authMode: AuthMode | null;
   providerName: string;
+  children: ReactNode;
 }) {
   const t = useTranslations("Sidebar");
   const { data: session } = useSession();
@@ -211,6 +214,7 @@ export function AppSidebar({
             title={t("openSidebar")}
             className="fixed top-4 left-4 z-20 md:hidden"
           />
+          {children}
         </main>
       </SidebarProvider>
     </TooltipProvider>
