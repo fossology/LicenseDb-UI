@@ -12,17 +12,24 @@ function endpoint(baseUrl: string, path: string) {
   return new URL(path, `${baseUrl.replace(/\/+$/, "")}/`).toString();
 }
 
-function parseTokens(body: unknown, previousRefreshToken?: string): BackendTokens {
+function parseTokens(
+  body: unknown,
+  previousRefreshToken?: string,
+): BackendTokens {
   if (!isRecord(body) || !isRecord(body.data)) {
     throw new Error("AuthenticationUnavailable");
   }
   const { access_token: accessToken, expires_at: expiresAt } = body.data;
   const refreshToken = body.data.refresh_token ?? previousRefreshToken;
-  const expiresAtMs = typeof expiresAt === "string" ? Date.parse(expiresAt) : NaN;
+  const expiresAtMs =
+    typeof expiresAt === "string" ? Date.parse(expiresAt) : NaN;
   if (
-    typeof accessToken !== "string" || !accessToken.trim() ||
-    typeof refreshToken !== "string" || !refreshToken.trim() ||
-    !Number.isFinite(expiresAtMs) || expiresAtMs <= Date.now()
+    typeof accessToken !== "string" ||
+    !accessToken.trim() ||
+    typeof refreshToken !== "string" ||
+    !refreshToken.trim() ||
+    !Number.isFinite(expiresAtMs) ||
+    expiresAtMs <= Date.now()
   ) {
     throw new Error("AuthenticationUnavailable");
   }
@@ -44,22 +51,33 @@ export async function loginWithCredentials(
 ) {
   const username = credentials?.username?.trim() ?? "";
   const password = credentials?.password ?? "";
+  if (!username || !password) return null;
 
   try {
     const login = await backendRequest(endpoint(baseUrl, "login"), {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
       body: JSON.stringify({ username, password }),
     });
     if (login.status === 401) return null;
     if (!login.ok) throw new Error("AuthenticationUnavailable");
     const tokens = parseTokens(await login.json());
     const profile = await backendRequest(endpoint(baseUrl, "users/profile"), {
-      headers: { Authorization: `Bearer ${tokens.accessToken}`, Accept: "application/json" },
+      headers: {
+        Authorization: `Bearer ${tokens.accessToken}`,
+        Accept: "application/json",
+      },
     });
     if (!profile.ok) throw new Error("AuthenticationUnavailable");
     const body: unknown = await profile.json();
-    if (!isRecord(body) || !Array.isArray(body.data) || body.data.length !== 1) {
+    if (
+      !isRecord(body) ||
+      !Array.isArray(body.data) ||
+      body.data.length !== 1
+    ) {
       throw new Error("AuthenticationUnavailable");
     }
     const user: unknown = body.data[0];
@@ -70,7 +88,8 @@ export async function loginWithCredentials(
     return {
       user: {
         id: user.id,
-        name: typeof user.display_name === "string" ? user.display_name : username,
+        name:
+          typeof user.display_name === "string" ? user.display_name : username,
         email: typeof user.user_email === "string" ? user.user_email : null,
       },
       tokens,
@@ -80,11 +99,17 @@ export async function loginWithCredentials(
   }
 }
 
-export async function refreshBackendTokens(tokens: BackendTokens, baseUrl: string) {
+export async function refreshBackendTokens(
+  tokens: BackendTokens,
+  baseUrl: string,
+) {
   try {
     const response = await backendRequest(endpoint(baseUrl, "refresh-token"), {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
       body: JSON.stringify({ refresh_token: tokens.refreshToken }),
     });
     if (!response.ok) throw new Error("AuthenticationUnavailable");

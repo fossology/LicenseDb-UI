@@ -22,15 +22,15 @@ language. Pages and their root layout live in `app/[locale]`.
 - Supported locales and the default locale are defined in `i18n/routing.ts`.
 - Translations live in `messages/en.json` and `messages/de.json`.
 - Use `getTranslations` from `next-intl/server` in Server Components and
-	`useTranslations` from `next-intl` in Client Components.
+  `useTranslations` from `next-intl` in Client Components.
 - Import locale-aware `Link`, `useRouter`, and `redirect` from `i18n/navigation.ts`.
 - `proxy.ts` handles locale detection; API routes and static assets are excluded.
 - `i18n/request.ts` uses the stable `next/root-params` API. Locales are prerendered
-	with `generateStaticParams`, preserving the existing Cache Components setup.
-	The provider tree streams inside Suspense and checks OAuth availability at
-	request time, so secrets can be supplied at deployment runtime.
+  with `generateStaticParams`, preserving the existing Cache Components setup.
+  The provider tree streams inside Suspense and checks OAuth availability at
+  request time, so secrets can be supplied at deployment runtime.
 - Translation keys and locales are typed through `i18n/types.d.ts`. When adding a
-	locale, update routing, the message loader, the selector, and the message catalog.
+  locale, update routing, the message loader, the selector, and the message catalog.
 
 ## Authentication
 
@@ -39,12 +39,12 @@ registered. Missing/invalid configuration disables login and returns `503` from
 auth endpoints. All configuration is server-only; never use `NEXT_PUBLIC_` for
 secrets. Restart the server after changing auth mode or provider settings.
 
-| Variable | Value |
-| --- | --- |
-| `NEXTAUTH_URL` | Canonical application origin, HTTPS in production |
-| `NEXTAUTH_SECRET` | A strong random secret, generated with `openssl rand -base64 32` |
-| `AUTH_MODE` | `credentials` or `oauth` |
-| `LICENSEDB_API_URL` | Credentials mode: API base including `/api/v1` |
+| Variable            | Value                                                            |
+| ------------------- | ---------------------------------------------------------------- |
+| `NEXTAUTH_URL`      | Canonical application origin, HTTPS in production                |
+| `NEXTAUTH_SECRET`   | A strong random secret, generated with `openssl rand -base64 32` |
+| `AUTH_MODE`         | `credentials` or `oauth`                                         |
+| `LICENSEDB_API_URL` | Credentials mode: API base including `/api/v1`                   |
 
 Production requires HTTPS URLs. HTTP is permitted only for loopback development
 URLs. Use a deployment secret manager and never commit `.env.local`.

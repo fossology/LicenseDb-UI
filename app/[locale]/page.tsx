@@ -13,7 +13,9 @@ export default async function Home({
 }) {
   const { locale } = await params;
   return (
-    <Suspense fallback={<main className="min-h-svh bg-[#100712]" aria-busy="true" />}>
+    <Suspense
+      fallback={<main className="min-h-svh bg-[#100712]" aria-busy="true" />}
+    >
       <AuthenticatedHome locale={locale} />
     </Suspense>
   );

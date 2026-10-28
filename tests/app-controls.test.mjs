@@ -5,8 +5,17 @@ import { runInNewContext } from "node:vm";
 import ts from "typescript";
 
 async function createAuthenticate(signOut, events) {
-  const source = await readFile(new URL("../components/app-controls.tsx", import.meta.url), "utf8");
-  const parsed = ts.createSourceFile("app-controls.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const source = await readFile(
+    new URL("../components/app-controls.tsx", import.meta.url),
+    "utf8",
+  );
+  const parsed = ts.createSourceFile(
+    "app-controls.tsx",
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
   let handler;
   function visit(node) {
     if (ts.isFunctionDeclaration(node) && node.name?.text === "authenticate") {
@@ -36,14 +45,22 @@ test("logout disables document navigation and waits for sign-out before refreshi
   const authenticate = await createAuthenticate((options) => {
     assert.equal(options.redirect, false);
     assert.equal(options.callbackUrl, "https://licenses.example.com/de");
-    return new Promise((resolve) => { finishSignOut = resolve; });
+    return new Promise((resolve) => {
+      finishSignOut = resolve;
+    });
   }, events);
 
   const pending = authenticate();
   assert.deepEqual(events, ["pending:true", "error:false", "clear"]);
   finishSignOut();
   await pending;
-  assert.deepEqual(events, ["pending:true", "error:false", "clear", "refresh", "pending:false"]);
+  assert.deepEqual(events, [
+    "pending:true",
+    "error:false",
+    "clear",
+    "refresh",
+    "pending:false",
+  ]);
 });
 
 test("failed logout reports the error without refreshing and resets pending state", async () => {
@@ -53,5 +70,11 @@ test("failed logout reports the error without refreshing and resets pending stat
   }, events);
 
   await authenticate();
-  assert.deepEqual(events, ["pending:true", "error:false", "clear", "error:true", "pending:false"]);
+  assert.deepEqual(events, [
+    "pending:true",
+    "error:false",
+    "clear",
+    "error:true",
+    "pending:false",
+  ]);
 });

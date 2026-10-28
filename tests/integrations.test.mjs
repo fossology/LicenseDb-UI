@@ -39,10 +39,9 @@ test("fetchJson propagates cancellation", async (context) => {
     options.signal.throwIfAborted();
   });
 
-  await assert.rejects(
-    fetchJson("/api/me", { signal: controller.signal }),
-    { name: "AbortError" },
-  );
+  await assert.rejects(fetchJson("/api/me", { signal: controller.signal }), {
+    name: "AbortError",
+  });
 });
 
 test("all locales contain the same translation keys and placeholders", async () => {
@@ -54,7 +53,10 @@ test("all locales contain the same translation keys and placeholders", async () 
   );
 
   function compareMessages(reference, translated) {
-    assert.deepEqual(Object.keys(translated).sort(), Object.keys(reference).sort());
+    assert.deepEqual(
+      Object.keys(translated).sort(),
+      Object.keys(reference).sort(),
+    );
     for (const [key, value] of Object.entries(reference)) {
       if (typeof value === "string") {
         assert.equal(typeof translated[key], "string");

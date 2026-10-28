@@ -71,9 +71,7 @@ export function AppSidebar({
 
   return (
     <TooltipProvider delay={0}>
-      <SidebarProvider
-        className="licensedb-sidebar min-h-svh bg-[#100712]"
-      >
+      <SidebarProvider className="licensedb-sidebar min-h-svh bg-[#100712]">
         <Sidebar collapsible="icon" className="border-[#48234e]">
           <SidebarHeader className="gap-4 px-4 pt-6 pb-4">
             <div className="flex h-10 items-center gap-2.5 overflow-hidden px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
@@ -160,14 +158,21 @@ export function AppSidebar({
               <details className="group/profile relative">
                 <summary
                   className="flex min-h-[4.5rem] w-full min-w-0 cursor-pointer list-none items-center gap-3 rounded-md bg-[#57215e] px-3 py-2.5 text-left text-white transition-colors hover:bg-[#64266c] group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:min-h-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0! [&::-webkit-details-marker]:hidden"
-                  aria-label={t("profileLabel", { name: profileName ?? t("admin"), role: t("admin") })}
+                  aria-label={t("profileLabel", {
+                    name: profileName ?? t("admin"),
+                    role: t("admin"),
+                  })}
                 >
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#35113b] text-xl font-medium text-white">
                     {(profileName ?? t("admin")).charAt(0).toUpperCase()}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col group-data-[collapsible=icon]:hidden">
-                    <span className="truncate text-sm font-medium">{profileName ?? t("admin")}</span>
-                    <span className="mt-0.5 text-xs text-[#ddc7e1]">{t("admin")}</span>
+                    <span className="truncate text-sm font-medium">
+                      {profileName ?? t("admin")}
+                    </span>
+                    <span className="mt-0.5 text-xs text-[#ddc7e1]">
+                      {t("admin")}
+                    </span>
                   </span>
                   <ChevronDown className="size-4 shrink-0 transition-transform group-open/profile:rotate-180 group-data-[collapsible=icon]:hidden" />
                 </summary>
@@ -192,7 +197,10 @@ export function AppSidebar({
             )}
             <SidebarSeparator className="mx-0 w-full bg-[#48234e]" />
             <div className="truncate px-2 text-center text-xs text-[#bda9c1] group-data-[collapsible=icon]:px-0">
-              2.0.0<span className="group-data-[collapsible=icon]:hidden">&nbsp;© 2026&nbsp; LicenseDb</span>
+              2.0.0
+              <span className="group-data-[collapsible=icon]:hidden">
+                &nbsp;© 2026&nbsp; LicenseDb
+              </span>
             </div>
           </SidebarFooter>
         </Sidebar>

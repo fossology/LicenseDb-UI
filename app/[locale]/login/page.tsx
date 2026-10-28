@@ -56,14 +56,21 @@ async function LoginContent({
 
   return (
     <main className="relative flex min-h-svh items-center justify-center overflow-hidden bg-[#100712] px-5 py-10 text-[#f3e9f4] [font-family:var(--font-geist-sans)]">
-      <div aria-hidden="true" className="absolute inset-y-0 left-0 hidden w-[32%] border-r border-[#48234e]/70 bg-[#1a0b1e] lg:block" />
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 hidden w-[32%] border-r border-[#48234e]/70 bg-[#1a0b1e] lg:block"
+      />
       <div className="absolute top-6 right-6 z-10">
         <LanguageSwitcher variant="login" />
       </div>
       <section className="relative z-10 w-full max-w-[26rem]">
         <div className="mb-8 flex items-center justify-center gap-3 lg:justify-start">
           <span className="flex size-11 items-center justify-center rounded-md border border-[#69436f] bg-[#27102d]">
-            <Lightbulb aria-hidden="true" className="size-5 text-[#ff334f]" strokeWidth={2.5} />
+            <Lightbulb
+              aria-hidden="true"
+              className="size-5 text-[#ff334f]"
+              strokeWidth={2.5}
+            />
           </span>
           <span className="text-2xl font-semibold text-white">LicenseDb</span>
         </div>
@@ -73,7 +80,9 @@ async function LoginContent({
               <ShieldCheck aria-hidden="true" className="size-5" />
             </div>
             <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
-            <p className="mt-2 text-sm leading-6 text-[#c5b2ca]">{t("description")}</p>
+            <p className="mt-2 text-sm leading-6 text-[#c5b2ca]">
+              {t("description")}
+            </p>
           </div>
           <LoginForm
             authConfigured={authConfigured}
@@ -92,7 +101,10 @@ async function LoginContent({
 function LoginFallback({ title }: { title: string }) {
   return (
     <main className="flex min-h-svh items-center justify-center bg-[#100712] px-5 text-[#f3e9f4] [font-family:var(--font-geist-sans)]">
-      <section className="w-full max-w-[26rem] rounded-lg border border-[#48234e] bg-[#1a0b1e] p-8" aria-busy="true">
+      <section
+        className="w-full max-w-[26rem] rounded-lg border border-[#48234e] bg-[#1a0b1e] p-8"
+        aria-busy="true"
+      >
         <h1 className="text-2xl font-semibold text-white">{title}</h1>
         <div className="mt-6 h-11 animate-pulse rounded-md bg-[#35163a]" />
         <div className="mt-4 h-11 animate-pulse rounded-md bg-[#35163a]" />

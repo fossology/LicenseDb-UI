@@ -146,7 +146,9 @@ export function LoginForm({
           ) : (
             <ArrowRight aria-hidden="true" className="size-4" />
           )}
-          {pending ? t("signingIn") : t("oauthSignIn", { provider: providerName })}
+          {pending
+            ? t("signingIn")
+            : t("oauthSignIn", { provider: providerName })}
         </button>
       </div>
     );
