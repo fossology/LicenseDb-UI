@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: © 2025 Siemens AG
 # SPDX-FileContributor: Kaushlendra Pratap <kaushlendra-pratap.singh@siemens.com>
+# SPDX-FileContributor: Dearsh Oberoi <dearsh.oberoi@siemens.com>
 
 # SPDX-License-Identifier: GPL-2.0-only
 
@@ -7,70 +8,26 @@ name: LicenseDB UI Actions
 
 on:
   push:
-    branches: [main]
+    branches: [main-new]
   pull_request:
-    branches: [main]
+    branches: [main-new]
 
 jobs:
-  setup-node:
-    name: Setup & Cache Node
+  checks:
+    name: Lint, Format, Tests & Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           cache: "npm"
-
-      - name: Install Dependencies
-        run: |
-          if [ -e package-lock.json ]; then
-            npm ci
-          else
-            npm i
-          fi
-
-  lint:
-    name: Lint
-    needs: setup-node
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - run: |
-          npm ci --prefer-offline
-          npm run lint
-
-  format:
-    name: Format Check
-    needs: setup-node
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - run: |
-          npm ci --prefer-offline
-          npm run prettier
-
-  test:
-    name: Tests
-    needs: setup-node
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - run: |
-          npm ci --prefer-offline
-          npm test
-
-  build:
-    name: Build
-    needs: setup-node
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - run: |
-          npm ci --prefer-offline
-          npm run build
+      - run: npm install --global "$(node -p 'require("./package.json").packageManager')"
+      - run: npm ci --prefer-offline
+      - run: npm run lint
+      - run: npm run prettier
+      - run: npm test
+      - run: npm run build
 
   reuse-compliance:
     name: REUSE Compliance
