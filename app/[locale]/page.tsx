@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Dashboard } from "@/components/dashboard";
 import { getAuthOptions, isAuthConfigured } from "@/lib/auth";
 import { getAuthConfiguration } from "@/lib/auth-configuration";
 
@@ -41,6 +42,8 @@ async function AuthenticatedHome({ locale }: { locale: string }) {
       authConfigured={authConfigured}
       authMode={mode}
       providerName={providerName}
-    />
+    >
+      <Dashboard />
+    </AppSidebar>
   );
 }
