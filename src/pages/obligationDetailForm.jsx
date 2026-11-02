@@ -36,7 +36,7 @@ import {
 	fetchObligationCategories
 } from '../api/api';
 import SimilarityResultList from '../components/SimilarityResultList';
-import { loadYaml } from '../utils/loadYaml';
+import { loadExternalRefFields } from '../utils/loadYaml';
 import { resolveComponentPath } from '../utils/componentPathMap';
 
 function ObligationDetailForm({
@@ -217,14 +217,7 @@ function ObligationDetailForm({
 
 	const [fields, setFields] = useState([]);
 	useEffect(() => {
-		const fetchConfig = async () => {
-			const config = await loadYaml(
-				`${import.meta.env.VITE_DOMAIN_SUBDIRECTORY ? `/${import.meta.env.VITE_DOMAIN_SUBDIRECTORY}` : ''}/externalRef.yaml`,
-			);
-			setFields(config.obligation.fields);
-		};
-
-		fetchConfig();
+		loadExternalRefFields('obligation').then(setFields);
 	}, []);
 
 	const handleChangeExt = e => {

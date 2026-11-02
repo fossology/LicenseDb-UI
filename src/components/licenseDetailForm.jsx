@@ -31,7 +31,7 @@ import {
 	fetchSimilarLicenses,
 } from '../api/api';
 import 'react-toastify/dist/ReactToastify.css';
-import { loadYaml } from '../utils/loadYaml';
+import { loadExternalRefFields } from '../utils/loadYaml';
 import { resolveComponentPath } from '../utils/componentPathMap';
 
 function LicenseDetailForm({
@@ -49,14 +49,7 @@ function LicenseDetailForm({
 	const [similarLicenses, setSimilarLicenses] = useState([]);
 
 	useEffect(() => {
-		const fetchConfig = async () => {
-			const config = await loadYaml(
-				`${import.meta.env.VITE_DOMAIN_SUBDIRECTORY ? `/${import.meta.env.VITE_DOMAIN_SUBDIRECTORY}` : ''}/externalRef.yaml`,
-			);
-			setFields(config.license.fields);
-		};
-
-		fetchConfig();
+		loadExternalRefFields('license').then(setFields);
 	}, []);
 
 	const {
