@@ -25,25 +25,76 @@ LicenseDB backend at [http://localhost:8080/swagger/index.html](http://localhost
 - ```npm```
 - Using a Node version manager like [```nvm```](https://github.com/nvm-sh/nvm) is strongly recommended for installing ```NodeJS``` and ```npm```.
 
-## Set Up
+## Full-Stack Docker Compose Development
 
-- Set the following environment variables:
-    - ```REACT_APP_DOMAIN_SUBDIRECTORY```: The basename of the app for situations where you can't deploy to the root of the domain, but a sub directory.
-    - ```PUBLIC_URL```: The URL at which the application is hosted, along with the subdirectory.
-    - ```REACT_APP_BASE_URL```: The URL at which backend of the application is hosted.
-    - ```REACT_APP_PROVIDER```: ```oidc``` or ```password```. Used to configure login mechanism of the application as OIDC or username-password.  
-    - ```REACT_APP_CLIENT_ID```: The client id of the app instance registered with the OIDC tenant.
-    - ```REACT_APP_AUTH_URL```: The authorization url of the app instance registered with the OIDC tenant.
-    - ```REACT_APP_TOKEN_URL```: The token url of the app instance registered with the OIDC tenant.
-    - ```REACT_APP_REDIRECT_URL```=```http://localhost:3000/redirect```
+The frontend Compose file starts the UI, LicenseDB API, and PostgreSQL as one
+stack. It expects a sibling checkout named `LicenseDb`:
 
-    See .env.example for more details.
-- Install dependencies
-   ``` bash 
-   npm install
-   ```
-- Run application
-  ```bash
-  npm start
-  ```
-- If everything went well, the localhost port 3000 will be opened in your host and you will be able to access the application.
+```text
+workspace/
+  LicenseDb/
+  LicenseDb-UI/
+```
+
+From `LicenseDb-UI`, create a local configuration file and start the stack:
+
+```bash
+cp .env.example .env
+docker compose up --build --wait
+```
+
+Open `http://localhost:8081`. The browser reaches the API through the UI at
+`/api/v1`; PostgreSQL and the API are not published to the host.
+
+To use a differently named sibling checkout, such as a feature branch clone,
+set `LICENSEDB_BACKEND_CONTEXT` in `.env` to its relative or absolute path.
+
+Validate and stop the stack with:
+
+```bash
+docker compose config -q
+docker compose ps
+curl -fsS http://localhost:8081/api/v1/health
+docker compose down
+```
+
+Do not run this stack alongside the backend repository's standalone Compose
+stack. Each stack creates its own API and PostgreSQL services. Use the frontend
+Compose file for full-stack development and deployment; keep the backend
+Compose file for API-only development.
+
+### Systemd Deployment
+
+For a server deployment, check out `LicenseDb` and `LicenseDb-UI` as siblings
+under `/opt/licensedb`, then place the real Compose variables in
+`/etc/licensedb/.env`. Do not commit this file.
+
+Build the images once after source updates:
+
+```bash
+cd /opt/licensedb/LicenseDb-UI
+sudo /usr/bin/docker compose --env-file /etc/licensedb/.env build
+```
+
+Install [docs/licensedb-compose.service](docs/licensedb-compose.service) as
+`/etc/systemd/system/licensedb-compose.service`, adjusting the working
+directory if needed. Then enable it:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now licensedb-compose.service
+```
+
+The unit starts the UI, API, and PostgreSQL after Docker and the network are
+available. It waits for their health checks but does not rebuild images during
+every server boot.
+
+## Local Frontend Development
+
+Set `VITE_BASE_URL` and `VITE_DOMAIN_SUBDIRECTORY` in `.env.local` as needed.
+Then install dependencies and start Vite:
+
+```bash
+npm ci
+npm run dev
+```
