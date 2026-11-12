@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomSelect from '../components/customStyleSelect';
 import SimilarityResultList from '../components/SimilarityResultList';
 import { resolveComponentPath } from '../utils/componentPathMap';
-import { loadYaml } from '../utils/loadYaml';
+import { loadExternalRefFields } from '../utils/loadYaml';
 
 import {
 	postObligation,
@@ -36,14 +36,7 @@ function CreateObligation() {
 		label: `${l.shortname} (Id:${l.id})`,
 	}));
 	useEffect(() => {
-		const fetchConfig = async () => {
-			const config = await loadYaml(
-				`${import.meta.env.VITE_DOMAIN_SUBDIRECTORY ? `/${import.meta.env.VITE_DOMAIN_SUBDIRECTORY}` : ''}/externalRef.yaml`,
-			);
-			setFields(config.obligation.fields);
-		};
-
-		fetchConfig();
+		loadExternalRefFields('obligation').then(setFields);
 	}, []);
 
 	const navigate = useNavigate();

@@ -17,7 +17,7 @@ import {
 	fetchSimilarLicenses,
 	fetchObligationPreviews,
 } from '../api/api';
-import { loadYaml } from '../utils/loadYaml';
+import { loadExternalRefFields } from '../utils/loadYaml';
 import { resolveComponentPath } from '../utils/componentPathMap';
 import SimilarityResultList from '../components/SimilarityResultList';
 
@@ -49,14 +49,7 @@ function CreateLicense() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const fetchConfig = async () => {
-			const config = await loadYaml(
-				`${import.meta.env.VITE_DOMAIN_SUBDIRECTORY ? `/${import.meta.env.VITE_DOMAIN_SUBDIRECTORY}` : ''}/externalRef.yaml`,
-			);
-			setFields(config.license.fields);
-		};
-
-		fetchConfig();
+		loadExternalRefFields('license').then(setFields);
 	}, []);
 
 	useEffect(() => {
