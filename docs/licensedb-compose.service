@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2026 Siemens AG
+# SPDX-License-Identifier: GPL-2.0-only
+
+[Unit]
+Description=LicenseDB full-stack Docker Compose deployment
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/licensedb/LicenseDb-UI
+EnvironmentFile=/etc/licensedb/.env
+ExecStartPre=/usr/bin/docker compose --env-file /etc/licensedb/.env config -q
+ExecStart=/usr/bin/docker compose --env-file /etc/licensedb/.env up -d --wait --wait-timeout 180
+ExecStop=/usr/bin/docker compose --env-file /etc/licensedb/.env down
+TimeoutStartSec=200
+
+[Install]
+WantedBy=multi-user.target

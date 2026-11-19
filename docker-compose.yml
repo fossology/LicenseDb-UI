@@ -1,0 +1,71 @@
+# SPDX-FileCopyrightText: 2026 Siemens AG
+# SPDX-License-Identifier: GPL-2.0-only
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --dbname $$POSTGRES_DB --username $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - licensedb-network
+
+  licensedb:
+    build:
+      context: ${LICENSEDB_BACKEND_CONTEXT:-../LicenseDb}
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      DB_NAME: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+      POPULATE_DB: ${POPULATE_DB:-true}
+      GIN_MODE: ${GIN_MODE:-debug}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    networks:
+      - licensedb-network
+
+  web:
+    build:
+      context: .
+      args:
+        VITE_BASE_URL: ${VITE_BASE_URL:-/api/v1}
+        VITE_DOMAIN_SUBDIRECTORY: ${VITE_DOMAIN_SUBDIRECTORY:-}
+    ports:
+      - "${LICENSEDB_UI_PORT:-8081}:80"
+    depends_on:
+      licensedb:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - licensedb-network
+
+networks:
+  licensedb-network:
+    driver: bridge
+
+volumes:
+  pgdata:
